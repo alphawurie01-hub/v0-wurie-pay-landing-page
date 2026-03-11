@@ -31,9 +31,6 @@ import {
   Share2,
   Gift,
   Award,
-  Send,
-  BarChart3,
-  PieChart,
   Target,
 } from "lucide-react"
 
@@ -432,60 +429,7 @@ const SolutionSection = () => {
   )
 }
 
-// Product Preview Section
-const ProductPreviewSection = () => {
-  return (
-    <section className="py-16 md:py-24">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="text-center">
-          <h2 className="text-3xl font-bold sm:text-4xl lg:text-5xl">Designed for simplicity</h2>
-          <p className="mx-auto mt-4 max-w-2xl text-lg text-muted-foreground">
-            Designed to make managing money simple, intelligent, and secure.
-          </p>
-        </div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="mt-12"
-        >
-          <div className="relative overflow-hidden rounded-2xl border bg-gradient-to-br from-emerald-50 to-teal-50 p-8 dark:from-emerald-950/20 dark:to-teal-950/20">
-            <div className="grid gap-6 md:grid-cols-3">
-              <Card>
-                <CardHeader>
-                  <Wallet className="h-8 w-8 text-[#00A86B]" />
-                  <CardTitle className="mt-2">Wallet Dashboard</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-muted-foreground">View balances, transactions, and quick actions in one place</p>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardHeader>
-                  <Send className="h-8 w-8 text-[#00A86B]" />
-                  <CardTitle className="mt-2">Payment Screen</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-muted-foreground">Send money instantly with just a few taps</p>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardHeader>
-                  <BarChart3 className="h-8 w-8 text-[#00A86B]" />
-                  <CardTitle className="mt-2">AI Insights</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-muted-foreground">Smart analytics that help you understand your spending</p>
-                </CardContent>
-              </Card>
-            </div>
-          </div>
-        </motion.div>
-      </div>
-    </section>
-  )
-}
 
 // Key Features Section
 const BenefitsSection = () => {
@@ -772,11 +716,11 @@ const ReferralSection = () => {
         {/* Share Buttons */}
         <div className="mt-12 text-center">
           <p className="mb-6 text-lg font-medium">Share with friends</p>
-          <div className="flex flex-wrap justify-center gap-4">
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:flex md:flex-wrap md:justify-center md:gap-4">
             {shareLinks.map((link, index) => (
               <Button 
                 key={index} 
-                className={cn("text-white", link.color)}
+                className={cn("text-white w-full md:w-auto", link.color)}
                 size="lg"
               >
                 {link.icon}
@@ -945,7 +889,6 @@ export default function WuriePayLanding() {
         <SocialProofSection />
         <ProblemSection />
         <SolutionSection />
-        <ProductPreviewSection />
         <BenefitsSection />
         <WhyDifferentSection />
         <SecuritySection />
