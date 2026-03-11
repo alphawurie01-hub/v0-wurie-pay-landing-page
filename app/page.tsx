@@ -31,9 +31,6 @@ import {
   Share2,
   Gift,
   Award,
-  Send,
-  BarChart3,
-  PieChart,
   Target,
 } from "lucide-react"
 
@@ -89,14 +86,27 @@ const AnimatedCounter = ({ value, duration = 2 }: { value: number; duration?: nu
 }
 
 // Logo Component
-const Logo = ({ className }: { className?: string }) => {
+const Logo = ({ className, size = "default", inverted = false }: { className?: string; size?: "sm" | "default" | "lg"; inverted?: boolean }) => {
+  const sizeClasses = {
+    sm: "h-8 w-auto",
+    default: "h-10 w-auto",
+    lg: "h-14 w-auto",
+  }
+  
   return (
-    <div className={cn("flex items-center gap-2", className)}>
-      <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#00A86B]">
-        <Wallet className="h-6 w-6 text-white" />
-      </div>
-      <span className="text-xl font-bold">
-        <span className="text-foreground">Wurie</span>
+    <div className={cn("flex items-center gap-3", className)}>
+      <img 
+        src="/images/wuriepay-logo.png" 
+        alt="WuriePay" 
+        className={cn(sizeClasses[size], inverted && "brightness-0 invert")}
+      />
+      <span className={cn(
+        "font-bold",
+        size === "sm" && "text-lg",
+        size === "default" && "text-xl",
+        size === "lg" && "text-2xl"
+      )}>
+        <span className={inverted ? "text-background" : "text-foreground"}>Wurie</span>
         <span className="text-[#00A86B]">Pay</span>
       </span>
     </div>
@@ -221,8 +231,15 @@ const HeroSection = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
           >
-            <Card className="border-2">
-              <CardHeader>
+            <Card className="border-2 overflow-hidden">
+              <CardHeader className="relative">
+                <div className="absolute -right-4 -top-4 h-24 w-24 opacity-5">
+                  <img src="/images/wuriepay-logo.png" alt="" className="h-full w-full object-contain" aria-hidden="true" />
+                </div>
+                <div className="flex items-center gap-2 mb-2">
+                  <img src="/images/wuriepay-logo.png" alt="WuriePay" className="h-6 w-auto" />
+                  <span className="text-xs font-medium text-muted-foreground">Early Access</span>
+                </div>
                 <CardTitle>Join the Early Access Waitlist</CardTitle>
                 <CardDescription>
                   Early access users will receive priority onboarding and exclusive beta features.
@@ -432,60 +449,7 @@ const SolutionSection = () => {
   )
 }
 
-// Product Preview Section
-const ProductPreviewSection = () => {
-  return (
-    <section className="py-16 md:py-24">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="text-center">
-          <h2 className="text-3xl font-bold sm:text-4xl lg:text-5xl">Designed for simplicity</h2>
-          <p className="mx-auto mt-4 max-w-2xl text-lg text-muted-foreground">
-            Designed to make managing money simple, intelligent, and secure.
-          </p>
-        </div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="mt-12"
-        >
-          <div className="relative overflow-hidden rounded-2xl border bg-gradient-to-br from-emerald-50 to-teal-50 p-8 dark:from-emerald-950/20 dark:to-teal-950/20">
-            <div className="grid gap-6 md:grid-cols-3">
-              <Card>
-                <CardHeader>
-                  <Wallet className="h-8 w-8 text-[#00A86B]" />
-                  <CardTitle className="mt-2">Wallet Dashboard</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-muted-foreground">View balances, transactions, and quick actions in one place</p>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardHeader>
-                  <Send className="h-8 w-8 text-[#00A86B]" />
-                  <CardTitle className="mt-2">Payment Screen</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-muted-foreground">Send money instantly with just a few taps</p>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardHeader>
-                  <BarChart3 className="h-8 w-8 text-[#00A86B]" />
-                  <CardTitle className="mt-2">AI Insights</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-muted-foreground">Smart analytics that help you understand your spending</p>
-                </CardContent>
-              </Card>
-            </div>
-          </div>
-        </motion.div>
-      </div>
-    </section>
-  )
-}
 
 // Key Features Section
 const BenefitsSection = () => {
@@ -596,6 +560,9 @@ const SecuritySection = () => {
     <section id="security" className="py-16 md:py-24">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="text-center">
+          <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-[#00A86B]/10">
+            <img src="/images/wuriepay-logo.png" alt="WuriePay Security" className="h-10 w-auto" />
+          </div>
           <h2 className="text-3xl font-bold sm:text-4xl lg:text-5xl">Security built into every transaction</h2>
           <p className="mx-auto mt-4 max-w-2xl text-lg text-muted-foreground">
             Your security is our top priority. We use industry-leading technology to keep your money and data safe.
@@ -627,18 +594,18 @@ const SecuritySection = () => {
 
 // Team Section
 const TeamSection = () => {
-  const team = [
+  const founders = [
     {
       name: "Alhaji Wurie Jalloh",
-      role: "Co-Founder & CEO",
-      bio: "Entrepreneur focused on building financial infrastructure for Africa's digital economy.",
-      image: "https://api.dicebear.com/7.x/avataaars/svg?seed=alhaji&backgroundColor=b6e3f4",
+      role: "Co-Founder & Chief Executive Officer",
+      bio: "Entrepreneur and technology innovator dedicated to building scalable financial infrastructure for Africa. As CEO of WuriePay and leader within WurieGroup, he focuses on developing platforms that combine payments, artificial intelligence, and next-generation financial technology to enable greater financial inclusion and economic opportunity across the continent.",
+      image: "/images/alhaji.png",
     },
     {
       name: "Hassan Wurie Jalloh",
-      role: "Co-Founder & COO",
-      bio: "Responsible for operations, partnerships, and scaling the WuriePay platform.",
-      image: "https://api.dicebear.com/7.x/avataaars/svg?seed=hassan&backgroundColor=c0aede",
+      role: "Co-Founder",
+      bio: "Data Scientist and AI Engineer passionate about building intelligent systems that solve real-world problems. As Co-Founder of WuriePay and WurieAI, he brings expertise in machine learning, data science, and artificial intelligence to develop scalable technologies that advance financial innovation and inclusion across Africa.",
+      image: "/images/hassan.png",
     },
   ]
 
@@ -646,13 +613,16 @@ const TeamSection = () => {
     <section id="team" className="bg-muted/30 py-16 md:py-24">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="text-center">
-          <h2 className="text-3xl font-bold sm:text-4xl lg:text-5xl">
-            {"Built by founders committed to Africa's financial future"}
+          <h2 className="text-3xl font-bold sm:text-4xl lg:text-5xl text-balance">
+            {"Built by Founders Committed to Africa's Financial Future"}
           </h2>
+          <p className="mx-auto mt-4 max-w-3xl text-lg text-muted-foreground">
+            WuriePay is led by founders focused on building modern financial infrastructure that expands access to digital finance across Africa. Their mission is to empower individuals, entrepreneurs, and businesses with intelligent financial tools designed for the continent&apos;s rapidly growing digital economy.
+          </p>
         </div>
 
-        <div className="mt-12 grid gap-8 md:grid-cols-2">
-          {team.map((member, index) => (
+        <div className="mt-12 grid gap-8 lg:grid-cols-2">
+          {founders.map((member, index) => (
             <motion.div
               key={index}
               initial={{ opacity: 0, y: 20 }}
@@ -660,23 +630,49 @@ const TeamSection = () => {
               viewport={{ once: true }}
               transition={{ delay: index * 0.2 }}
             >
-              <Card className="overflow-hidden">
-                <div className="flex flex-col items-center p-8 text-center sm:flex-row sm:text-left">
-                  <img
-                    src={member.image}
-                    alt={member.name}
-                    className="h-32 w-32 rounded-full"
-                  />
-                  <div className="mt-4 sm:ml-6 sm:mt-0">
-                    <h3 className="text-xl font-bold">{member.name}</h3>
-                    <p className="mt-1 text-sm font-medium text-[#00A86B]">{member.role}</p>
-                    <p className="mt-3 text-sm text-muted-foreground">{member.bio}</p>
+              <Card className="h-full overflow-hidden">
+                <div className="flex flex-col p-6 sm:p-8">
+                  <div className="flex flex-col items-center text-center sm:flex-row sm:items-start sm:text-left">
+                    <div className="relative h-28 w-28 shrink-0 overflow-hidden rounded-full border-4 border-[#00A86B]/20 sm:h-32 sm:w-32">
+                      <img
+                        src={member.image}
+                        alt={member.name}
+                        className="h-full w-full object-cover"
+                      />
+                    </div>
+                    <div className="mt-4 sm:ml-6 sm:mt-0">
+                      <h3 className="text-xl font-bold">{member.name}</h3>
+                      <p className="mt-1 text-sm font-medium text-[#00A86B]">{member.role}</p>
+                    </div>
                   </div>
+                  <p className="mt-4 text-sm leading-relaxed text-muted-foreground">{member.bio}</p>
                 </div>
               </Card>
             </motion.div>
           ))}
         </div>
+
+        {/* Mission Statement */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="mt-12"
+        >
+          <Card className="border-[#00A86B]/20 bg-gradient-to-br from-emerald-50/50 to-teal-50/50 dark:from-emerald-950/20 dark:to-teal-950/20">
+            <CardContent className="p-6 sm:p-8">
+              <div className="flex flex-col items-center text-center">
+                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#00A86B]/10">
+                  <Target className="h-6 w-6 text-[#00A86B]" />
+                </div>
+                <h3 className="mt-4 text-lg font-semibold">Founder Mission Statement</h3>
+                <p className="mt-3 max-w-2xl text-muted-foreground italic">
+                  &ldquo;Our goal is to build financial technology that removes barriers, empowers African entrepreneurs, and connects Africa to the global digital economy.&rdquo;
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
       </div>
     </section>
   )
@@ -772,11 +768,11 @@ const ReferralSection = () => {
         {/* Share Buttons */}
         <div className="mt-12 text-center">
           <p className="mb-6 text-lg font-medium">Share with friends</p>
-          <div className="flex flex-wrap justify-center gap-4">
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:flex md:flex-wrap md:justify-center md:gap-4">
             {shareLinks.map((link, index) => (
               <Button 
                 key={index} 
-                className={cn("text-white", link.color)}
+                className={cn("text-white w-full md:w-auto", link.color)}
                 size="lg"
               >
                 {link.icon}
@@ -945,7 +941,6 @@ export default function WuriePayLanding() {
         <SocialProofSection />
         <ProblemSection />
         <SolutionSection />
-        <ProductPreviewSection />
         <BenefitsSection />
         <WhyDifferentSection />
         <SecuritySection />
