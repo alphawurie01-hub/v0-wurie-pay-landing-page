@@ -24,12 +24,13 @@ export function Navigation() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <div className="flex items-center gap-2">
-            <div className="w-9 h-9 bg-primary rounded-xl flex items-center justify-center">
-              <span className="text-lg font-bold text-primary-foreground">W</span>
-            </div>
-            <span className="text-xl font-bold text-foreground">WuriePay</span>
-          </div>
+          <a href="#" className="flex items-center">
+            <img 
+              src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/wuriepay-logo-EDnXEa8UX7aE4rzLWQhGkU3Q4vIktk.png" 
+              alt="WuriePay"
+              className="h-10 w-auto"
+            />
+          </a>
 
           {/* Desktop nav */}
           <div className="hidden md:flex items-center gap-8">

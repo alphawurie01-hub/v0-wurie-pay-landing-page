@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Field, FieldLabel } from "@/components/ui/field"
-import { Smartphone, ArrowRight, Sparkles } from "lucide-react"
+import { ArrowRight, Sparkles } from "lucide-react"
 
 const countries = [
   "Sierra Leone", "Nigeria", "Ghana", "Kenya", "South Africa", 
@@ -168,80 +168,13 @@ function PhoneMockup() {
       <div className="absolute inset-0 bg-primary/20 blur-3xl rounded-full scale-75" />
       
       {/* Phone frame */}
-      <div className="relative bg-foreground rounded-[3rem] p-3 shadow-2xl">
-        <div className="bg-background rounded-[2.5rem] overflow-hidden w-72 h-[580px]">
-          {/* Status bar */}
-          <div className="bg-card px-6 py-3 flex justify-between items-center">
-            <span className="text-xs text-muted-foreground">9:41</span>
-            <div className="flex items-center gap-1">
-              <div className="w-4 h-2 bg-muted-foreground/50 rounded-sm" />
-              <div className="w-6 h-3 bg-primary rounded-sm" />
-            </div>
-          </div>
-
-          {/* App content */}
-          <div className="px-6 py-4 space-y-6">
-            {/* Header */}
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">Good morning,</p>
-                <p className="text-lg font-semibold text-foreground">Alhaji</p>
-              </div>
-              <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
-                <Smartphone className="w-5 h-5 text-primary" />
-              </div>
-            </div>
-
-            {/* Balance card */}
-            <div className="bg-primary rounded-2xl p-5 text-primary-foreground">
-              <p className="text-sm opacity-90">Total Balance</p>
-              <p className="text-3xl font-bold mt-1">$12,458.00</p>
-              <div className="flex items-center gap-2 mt-2">
-                <span className="text-xs bg-primary-foreground/20 px-2 py-1 rounded-full">+12.5% this month</span>
-              </div>
-            </div>
-
-            {/* Quick actions */}
-            <div className="grid grid-cols-4 gap-3">
-              {[
-                { icon: "↗", label: "Send" },
-                { icon: "↙", label: "Request" },
-                { icon: "⚡", label: "Pay" },
-                { icon: "📊", label: "Insights" },
-              ].map((action) => (
-                <div key={action.label} className="flex flex-col items-center gap-2">
-                  <div className="w-12 h-12 bg-secondary rounded-xl flex items-center justify-center text-lg">
-                    {action.icon}
-                  </div>
-                  <span className="text-xs text-muted-foreground">{action.label}</span>
-                </div>
-              ))}
-            </div>
-
-            {/* Recent transactions */}
-            <div>
-              <p className="text-sm font-medium text-foreground mb-3">Recent Activity</p>
-              <div className="space-y-3">
-                {[
-                  { name: "MTN Airtime", amount: "-$5.00", type: "out" },
-                  { name: "John Kamara", amount: "+$150.00", type: "in" },
-                  { name: "EDSA Power", amount: "-$25.00", type: "out" },
-                ].map((tx, i) => (
-                  <div key={i} className="flex items-center justify-between py-2">
-                    <div className="flex items-center gap-3">
-                      <div className={`w-8 h-8 rounded-full flex items-center justify-center ${tx.type === "in" ? "bg-primary/10" : "bg-muted"}`}>
-                        <span className="text-xs">{tx.type === "in" ? "↙" : "↗"}</span>
-                      </div>
-                      <span className="text-sm text-foreground">{tx.name}</span>
-                    </div>
-                    <span className={`text-sm font-medium ${tx.type === "in" ? "text-primary" : "text-foreground"}`}>
-                      {tx.amount}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
+      <div className="relative bg-[#1a1a1a] rounded-[3rem] p-3 shadow-2xl">
+        <div className="bg-background rounded-[2.5rem] overflow-hidden w-72">
+          <img 
+            src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Screen%20Shot%202026-02-14%20at%204.03.22%20AM-8OpcurHBhV7hxosnloCKgdN93t2HFz.png"
+            alt="WuriePay App - Wallet Dashboard showing balance of 10,975,000.04 GNF with quick actions and popular services"
+            className="w-full h-auto"
+          />
         </div>
       </div>
     </div>

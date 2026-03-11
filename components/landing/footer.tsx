@@ -20,11 +20,12 @@ export function Footer() {
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
           {/* Brand */}
           <div className="lg:col-span-2">
-            <div className="flex items-center gap-2 mb-4">
-              <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center">
-                <span className="text-xl font-bold text-primary-foreground">W</span>
-              </div>
-              <span className="text-2xl font-bold text-background">WuriePay</span>
+            <div className="mb-4">
+              <img 
+                src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/wuriepay-logo-EDnXEa8UX7aE4rzLWQhGkU3Q4vIktk.png" 
+                alt="WuriePay"
+                className="h-14 w-auto brightness-0 invert"
+              />
             </div>
             <p className="text-background/60 mb-6 max-w-md">
               The future of finance in Africa. Send money, pay bills, and manage your finances with AI — all in one secure platform.

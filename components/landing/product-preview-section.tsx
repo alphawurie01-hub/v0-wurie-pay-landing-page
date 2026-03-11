@@ -1,11 +1,12 @@
-import { Smartphone, TrendingUp, Sparkles, ArrowUpRight, ArrowDownLeft } from "lucide-react"
+import { TrendingUp, Sparkles, Send, Receipt, Building2, Zap, MoreHorizontal } from "lucide-react"
+import Image from "next/image"
 
 export function ProductPreviewSection() {
   return (
     <section className="py-20 lg:py-28 bg-background overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-3xl mx-auto mb-16">
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground mb-6">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground mb-6 text-balance">
             Experience the future of finance
           </h2>
           <p className="text-lg text-muted-foreground">
@@ -14,86 +15,81 @@ export function ProductPreviewSection() {
         </div>
 
         <div className="grid lg:grid-cols-3 gap-8">
-          {/* Wallet Dashboard */}
+          {/* Wallet Dashboard - Using actual mockup */}
           <div className="bg-card rounded-3xl p-6 border border-border/50 shadow-lg">
             <div className="flex items-center gap-3 mb-6">
               <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
-                <Smartphone className="w-5 h-5 text-primary" />
+                <Building2 className="w-5 h-5 text-primary" />
               </div>
               <h3 className="font-semibold text-foreground">Wallet Dashboard</h3>
             </div>
             
-            <div className="bg-primary rounded-2xl p-5 text-primary-foreground mb-6">
-              <p className="text-sm opacity-80">Available Balance</p>
-              <p className="text-3xl font-bold mt-1">$4,285.50</p>
-              <div className="flex gap-3 mt-4">
-                <button className="flex-1 bg-primary-foreground/20 hover:bg-primary-foreground/30 rounded-xl py-2 text-sm font-medium transition-colors">
-                  <ArrowUpRight className="w-4 h-4 inline mr-1" /> Send
-                </button>
-                <button className="flex-1 bg-primary-foreground/20 hover:bg-primary-foreground/30 rounded-xl py-2 text-sm font-medium transition-colors">
-                  <ArrowDownLeft className="w-4 h-4 inline mr-1" /> Request
-                </button>
-              </div>
+            {/* Actual mockup balance card */}
+            <div className="rounded-2xl overflow-hidden mb-6 shadow-md">
+              <Image 
+                src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Screen%20Shot%202026-02-14%20at%204.03.22%20AM%20copy-LxayNz8Zr3l590jwlIA3Cy3fv641JK.png"
+                alt="WuriePay Wallet Balance - 10,975,000.04 GNF"
+                width={400}
+                height={200}
+                className="w-full h-auto"
+              />
             </div>
 
             <div className="space-y-3">
-              {[
-                { name: "Savings", amount: "$2,150.00", percent: "+5.2%" },
-                { name: "Investments", amount: "$1,800.00", percent: "+12.8%" },
-              ].map((account, i) => (
-                <div key={i} className="flex items-center justify-between p-3 bg-secondary rounded-xl">
-                  <span className="text-sm font-medium text-foreground">{account.name}</span>
-                  <div className="text-right">
-                    <span className="text-sm font-semibold text-foreground">{account.amount}</span>
-                    <span className="text-xs text-primary ml-2">{account.percent}</span>
+              <p className="text-sm font-medium text-foreground mb-3">Quick Actions</p>
+              <div className="grid grid-cols-3 gap-3">
+                {[
+                  { icon: Send, label: "Envoyer" },
+                  { icon: Receipt, label: "Factures" },
+                  { icon: Zap, label: "Recharge" },
+                ].map((action, i) => (
+                  <div key={i} className="flex flex-col items-center gap-2 p-3 bg-secondary rounded-xl">
+                    <div className="w-10 h-10 bg-background rounded-full flex items-center justify-center border border-border">
+                      <action.icon className="w-4 h-4 text-primary" />
+                    </div>
+                    <span className="text-xs text-muted-foreground">{action.label}</span>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           </div>
 
-          {/* Payment Screen */}
+          {/* Popular Services */}
           <div className="bg-card rounded-3xl p-6 border border-border/50 shadow-lg">
             <div className="flex items-center gap-3 mb-6">
               <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
-                <ArrowUpRight className="w-5 h-5 text-primary" />
+                <MoreHorizontal className="w-5 h-5 text-primary" />
               </div>
-              <h3 className="font-semibold text-foreground">Send Money</h3>
+              <h3 className="font-semibold text-foreground">Popular Services</h3>
             </div>
 
             <div className="space-y-4">
-              <div className="text-center py-6">
-                <p className="text-sm text-muted-foreground mb-2">Enter Amount</p>
-                <p className="text-5xl font-bold text-foreground">$250<span className="text-muted-foreground">.00</span></p>
-              </div>
-
-              <div className="bg-secondary rounded-xl p-4">
-                <p className="text-xs text-muted-foreground mb-2">Send to</p>
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-primary/20 rounded-full flex items-center justify-center">
-                    <span className="text-sm font-semibold text-primary">FK</span>
+              <p className="text-sm text-muted-foreground">Pay bills and services directly from your wallet</p>
+              
+              <div className="grid grid-cols-2 gap-3">
+                {[
+                  { name: "EDG", label: "Electricite" },
+                  { name: "SEG", label: "Eau" },
+                  { name: "CANAL+", label: "TV" },
+                  { name: "StarTimes", label: "TV" },
+                ].map((service, i) => (
+                  <div key={i} className="bg-secondary rounded-xl p-4 text-center hover:bg-accent transition-colors cursor-pointer">
+                    <div className="w-12 h-12 bg-background rounded-full flex items-center justify-center mx-auto mb-2 border border-border">
+                      <span className="text-xs font-semibold text-foreground">{service.name.charAt(0)}</span>
+                    </div>
+                    <p className="text-sm font-medium text-foreground">{service.name}</p>
+                    <p className="text-xs text-muted-foreground">{service.label}</p>
                   </div>
-                  <div>
-                    <p className="font-medium text-foreground">Fatmata Kamara</p>
-                    <p className="text-xs text-muted-foreground">+232 76 XXX XXX</p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-3 gap-2">
-                {[1, 2, 3, 4, 5, 6, 7, 8, 9, ".", 0, "⌫"].map((key, i) => (
-                  <button 
-                    key={i} 
-                    className="h-12 rounded-xl bg-secondary hover:bg-muted text-foreground font-medium transition-colors"
-                  >
-                    {key}
-                  </button>
                 ))}
               </div>
 
-              <button className="w-full bg-primary text-primary-foreground rounded-xl py-3 font-semibold">
-                Send $250.00
-              </button>
+              <div className="bg-primary/5 border border-primary/20 rounded-xl p-4 mt-4">
+                <p className="text-sm font-medium text-foreground">Recent Transactions</p>
+                <p className="text-xs text-muted-foreground mt-1">View all your payment history in one place</p>
+                <button className="text-sm font-medium text-primary mt-2 hover:underline">
+                  Voir Tout
+                </button>
+              </div>
             </div>
           </div>
 
@@ -115,7 +111,7 @@ export function ProductPreviewSection() {
                   <div>
                     <p className="text-sm font-medium text-foreground">Spending Alert</p>
                     <p className="text-xs text-muted-foreground mt-1">
-                      {"You've"} spent 40% more on transport this month. Consider carpooling to save ~$85/month.
+                      {"You've"} spent 40% more on utilities this month. Consider energy-saving practices.
                     </p>
                   </div>
                 </div>
@@ -128,14 +124,14 @@ export function ProductPreviewSection() {
                 </div>
                 <div className="space-y-3">
                   {[
-                    { category: "Food & Groceries", spent: 450, budget: 500 },
-                    { category: "Transport", spent: 280, budget: 200 },
-                    { category: "Entertainment", spent: 120, budget: 150 },
+                    { category: "Electricity (EDG)", spent: 450000, budget: 500000 },
+                    { category: "Water (SEG)", spent: 120000, budget: 150000 },
+                    { category: "TV Services", spent: 85000, budget: 100000 },
                   ].map((item, i) => (
                     <div key={i}>
                       <div className="flex justify-between text-xs mb-1">
                         <span className="text-foreground">{item.category}</span>
-                        <span className="text-muted-foreground">${item.spent}/${item.budget}</span>
+                        <span className="text-muted-foreground">{(item.spent/1000).toFixed(0)}K/{(item.budget/1000).toFixed(0)}K GNF</span>
                       </div>
                       <div className="h-2 bg-muted rounded-full overflow-hidden">
                         <div 
@@ -151,7 +147,7 @@ export function ProductPreviewSection() {
               <div className="bg-secondary rounded-xl p-4">
                 <p className="text-sm font-medium text-foreground mb-2">AI Assistant</p>
                 <div className="bg-background rounded-lg p-3 text-xs text-muted-foreground">
-                  {"\"Based on your income pattern, you could save $320 more per month by adjusting your subscriptions.\""}
+                  {"\"Based on your spending patterns, you could save 500,000 GNF per month by bundling your TV subscriptions.\""}
                 </div>
               </div>
             </div>
