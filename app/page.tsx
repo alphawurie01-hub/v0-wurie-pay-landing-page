@@ -86,14 +86,27 @@ const AnimatedCounter = ({ value, duration = 2 }: { value: number; duration?: nu
 }
 
 // Logo Component
-const Logo = ({ className }: { className?: string }) => {
+const Logo = ({ className, size = "default", inverted = false }: { className?: string; size?: "sm" | "default" | "lg"; inverted?: boolean }) => {
+  const sizeClasses = {
+    sm: "h-8 w-auto",
+    default: "h-10 w-auto",
+    lg: "h-14 w-auto",
+  }
+  
   return (
-    <div className={cn("flex items-center gap-2", className)}>
-      <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#00A86B]">
-        <Wallet className="h-6 w-6 text-white" />
-      </div>
-      <span className="text-xl font-bold">
-        <span className="text-foreground">Wurie</span>
+    <div className={cn("flex items-center gap-3", className)}>
+      <img 
+        src="/images/wuriepay-logo.png" 
+        alt="WuriePay" 
+        className={cn(sizeClasses[size], inverted && "brightness-0 invert")}
+      />
+      <span className={cn(
+        "font-bold",
+        size === "sm" && "text-lg",
+        size === "default" && "text-xl",
+        size === "lg" && "text-2xl"
+      )}>
+        <span className={inverted ? "text-background" : "text-foreground"}>Wurie</span>
         <span className="text-[#00A86B]">Pay</span>
       </span>
     </div>
@@ -218,8 +231,15 @@ const HeroSection = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
           >
-            <Card className="border-2">
-              <CardHeader>
+            <Card className="border-2 overflow-hidden">
+              <CardHeader className="relative">
+                <div className="absolute -right-4 -top-4 h-24 w-24 opacity-5">
+                  <img src="/images/wuriepay-logo.png" alt="" className="h-full w-full object-contain" aria-hidden="true" />
+                </div>
+                <div className="flex items-center gap-2 mb-2">
+                  <img src="/images/wuriepay-logo.png" alt="WuriePay" className="h-6 w-auto" />
+                  <span className="text-xs font-medium text-muted-foreground">Early Access</span>
+                </div>
                 <CardTitle>Join the Early Access Waitlist</CardTitle>
                 <CardDescription>
                   Early access users will receive priority onboarding and exclusive beta features.
@@ -540,6 +560,9 @@ const SecuritySection = () => {
     <section id="security" className="py-16 md:py-24">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="text-center">
+          <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-[#00A86B]/10">
+            <img src="/images/wuriepay-logo.png" alt="WuriePay Security" className="h-10 w-auto" />
+          </div>
           <h2 className="text-3xl font-bold sm:text-4xl lg:text-5xl">Security built into every transaction</h2>
           <p className="mx-auto mt-4 max-w-2xl text-lg text-muted-foreground">
             Your security is our top priority. We use industry-leading technology to keep your money and data safe.
