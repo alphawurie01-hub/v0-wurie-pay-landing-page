@@ -1,6 +1,7 @@
 "use client"
 
 import React, { useState, useEffect } from "react"
+import { WaitlistForm } from "@/components/waitlist-form"
 import { motion, AnimatePresence } from "framer-motion"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -174,8 +175,6 @@ const Header = () => {
 
 // Hero Section with Inline Waitlist
 const HeroSection = () => {
-  const [formData, setFormData] = useState({ name: "", phone: "", email: "", country: "" })
-
   return (
     <section className="relative overflow-hidden pt-24 pb-16 md:pt-32 md:pb-24">
       {/* Animated background */}
@@ -246,60 +245,7 @@ const HeroSection = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <form className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="name">Full Name</Label>
-                    <Input
-                      id="name"
-                      placeholder="Alpha Bah"
-                      value={formData.name}
-                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="phone">Phone Number</Label>
-                    <Input
-                      id="phone"
-                      type="tel"
-                      placeholder="+232 76 000 000"
-                      value={formData.phone}
-                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="email">Email Address</Label>
-                    <Input
-                      id="email"
-                      type="email"
-                      placeholder="you@example.com"
-                      value={formData.email}
-                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="country">Country</Label>
-                    <Select value={formData.country} onValueChange={(value) => setFormData({ ...formData, country: value })}>
-                      <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Select your country" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {allCountries.map((country) => (
-                          <SelectItem key={country} value={country.toLowerCase().replace(/\s+/g, '-')}>
-                            {country}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <Button type="submit" className="w-full bg-[#00A86B] hover:bg-[#00A86B]/90" size="lg">
-                    Join the Waitlist
-                    <ArrowRight className="ml-2 h-4 w-4" />
-                  </Button>
-                </form>
+                <WaitlistForm idPrefix="hero-" />
               </CardContent>
             </Card>
           </motion.div>
