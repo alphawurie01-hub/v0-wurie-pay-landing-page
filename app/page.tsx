@@ -378,12 +378,12 @@ const SolutionSection = () => {
     {
       title: "AI Finance",
       icon: Brain,
-      features: ["Smart financial insights", "Automated budgeting", "AI financial assistant", "Credit scoring"],
+      features: ["Spending insights", "Smart budgeting", "AI financial assistant", "Credit scoring"],
     },
     {
-      title: "Global Infrastructure",
+      title: "Blockchain",
       icon: Globe,
-      features: ["Cross-border payments", "Modern financial rails", "Digital asset support"],
+      features: ["Cross-border payments", "Stablecoin wallets", "Decentralized savings"],
     },
   ]
 
@@ -393,7 +393,7 @@ const SolutionSection = () => {
         <div className="text-center">
           <h2 className="text-3xl font-bold sm:text-4xl lg:text-5xl">Meet WuriePay</h2>
           <p className="mx-auto mt-4 max-w-3xl text-lg text-muted-foreground">
-            WuriePay is a modern fintech platform designed for Africa that combines payments, artificial intelligence, and next-generation financial infrastructure into one powerful app.
+            WuriePay is a modern fintech platform designed for Africa that combines payments, artificial intelligence, and decentralized finance into one powerful app.
           </p>
         </div>
 
@@ -487,23 +487,25 @@ const ProductPreviewSection = () => {
   )
 }
 
-// Benefits Section
+// Key Features Section
 const BenefitsSection = () => {
   const benefits = [
-    { icon: Zap, title: "Send Money Instantly", desc: "Transfer money quickly and securely" },
-    { icon: CreditCard, title: "Pay Bills Easily", desc: "Pay utilities and everyday expenses from one place" },
-    { icon: PieChart, title: "Understand Your Money", desc: "AI insights help you track spending and improve financial habits" },
-    { icon: Store, title: "Built for African Businesses", desc: "Tools for merchants and entrepreneurs to accept payments and track revenue" },
+    { icon: Wallet, title: "Smart Wallet", desc: "Secure wallet for storing and sending money." },
+    { icon: CreditCard, title: "Bill Payments", desc: "Pay utilities and everyday bills easily." },
+    { icon: Brain, title: "AI Financial Assistant", desc: "Personal financial insights and recommendations." },
+    { icon: Zap, title: "Instant Payments", desc: "Send money instantly to friends and businesses." },
+    { icon: Globe, title: "Global Transfers", desc: "Low-cost cross-border payments." },
+    { icon: Store, title: "Merchant Tools", desc: "Businesses can accept payments and track revenue." },
   ]
 
   return (
     <section id="features" className="bg-muted/30 py-16 md:py-24">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="text-center">
-          <h2 className="text-3xl font-bold sm:text-4xl lg:text-5xl">Everything you need</h2>
+          <h2 className="text-3xl font-bold sm:text-4xl lg:text-5xl">Key Features</h2>
         </div>
 
-        <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
           {benefits.map((benefit, index) => (
             <motion.div
               key={index}
@@ -518,6 +520,61 @@ const BenefitsSection = () => {
               </div>
               <h3 className="mt-4 text-lg font-semibold">{benefit.title}</h3>
               <p className="mt-2 text-sm text-muted-foreground">{benefit.desc}</p>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+// Why WuriePay Is Different Section
+const WhyDifferentSection = () => {
+  const differentiators = [
+    {
+      icon: Brain,
+      title: "AI-Powered Finance",
+      desc: "Smart tools that help users understand and grow their money.",
+    },
+    {
+      icon: Globe,
+      title: "Built for Africa",
+      desc: "Designed for African businesses, entrepreneurs, and global remittances.",
+    },
+    {
+      icon: Zap,
+      title: "Future-Ready Infrastructure",
+      desc: "Built with advanced technology to support modern financial services.",
+    },
+  ]
+
+  return (
+    <section className="py-16 md:py-24">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="text-center">
+          <h2 className="text-3xl font-bold sm:text-4xl lg:text-5xl">Why WuriePay Is Different</h2>
+        </div>
+
+        <div className="mt-12 grid gap-8 md:grid-cols-3">
+          {differentiators.map((item, index) => (
+            <motion.div
+              key={index}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: index * 0.15 }}
+            >
+              <Card className="h-full text-center">
+                <CardHeader>
+                  <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-[#00A86B]">
+                    <item.icon className="h-8 w-8 text-white" />
+                  </div>
+                  <CardTitle className="mt-4">{item.title}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-muted-foreground">{item.desc}</p>
+                </CardContent>
+              </Card>
             </motion.div>
           ))}
         </div>
@@ -890,6 +947,7 @@ export default function WuriePayLanding() {
         <SolutionSection />
         <ProductPreviewSection />
         <BenefitsSection />
+        <WhyDifferentSection />
         <SecuritySection />
         <TeamSection />
         <ReferralSection />
