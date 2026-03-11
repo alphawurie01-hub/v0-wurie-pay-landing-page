@@ -1,726 +1,901 @@
 "use client"
 
-import React, { useState } from 'react'
-import { motion } from 'framer-motion'
-import { 
-  Wallet, 
-  Zap, 
-  Shield, 
-  Globe, 
-  Brain, 
-  TrendingUp, 
-  Users, 
-  Lock, 
-  CheckCircle,
-  ArrowRight,
-  DollarSign,
-  BarChart3,
-  Building2,
-  Twitter,
-  Linkedin,
+import React, { useState, useEffect } from "react"
+import { motion, AnimatePresence } from "framer-motion"
+import { cn } from "@/lib/utils"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
+import {
+  Wallet,
+  CreditCard,
+  Brain,
+  Zap,
+  Globe,
+  Store,
+  Shield,
+  Lock,
+  Eye,
+  CheckCircle2,
+  Menu,
+  X,
   Mail,
+  ArrowRight,
+  Users,
+  TrendingUp,
+  DollarSign,
+  Sparkles,
   Share2,
+  Gift,
   Award,
-  Clock
-} from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { Separator } from '@/components/ui/separator'
-import Image from 'next/image'
+  Send,
+  BarChart3,
+  PieChart,
+  Target,
+} from "lucide-react"
 
-interface FormData {
-  name: string
-  phone: string
-  email: string
-  country: string
+// All countries list
+const allCountries = [
+  "Afghanistan", "Albania", "Algeria", "Andorra", "Angola", "Antigua and Barbuda", "Argentina", "Armenia", "Australia", "Austria",
+  "Azerbaijan", "Bahamas", "Bahrain", "Bangladesh", "Barbados", "Belarus", "Belgium", "Belize", "Benin", "Bhutan",
+  "Bolivia", "Bosnia and Herzegovina", "Botswana", "Brazil", "Brunei", "Bulgaria", "Burkina Faso", "Burundi", "Cabo Verde", "Cambodia",
+  "Cameroon", "Canada", "Central African Republic", "Chad", "Chile", "China", "Colombia", "Comoros", "Congo (Brazzaville)", "Congo (Kinshasa)",
+  "Costa Rica", "Croatia", "Cuba", "Cyprus", "Czech Republic", "Denmark", "Djibouti", "Dominica", "Dominican Republic", "Ecuador",
+  "Egypt", "El Salvador", "Equatorial Guinea", "Eritrea", "Estonia", "Eswatini", "Ethiopia", "Fiji", "Finland", "France",
+  "Gabon", "Gambia", "Georgia", "Germany", "Ghana", "Greece", "Grenada", "Guatemala", "Guinea", "Guinea-Bissau",
+  "Guyana", "Haiti", "Honduras", "Hungary", "Iceland", "India", "Indonesia", "Iran", "Iraq", "Ireland",
+  "Israel", "Italy", "Ivory Coast", "Jamaica", "Japan", "Jordan", "Kazakhstan", "Kenya", "Kiribati", "Kuwait",
+  "Kyrgyzstan", "Laos", "Latvia", "Lebanon", "Lesotho", "Liberia", "Libya", "Liechtenstein", "Lithuania", "Luxembourg",
+  "Madagascar", "Malawi", "Malaysia", "Maldives", "Mali", "Malta", "Marshall Islands", "Mauritania", "Mauritius", "Mexico",
+  "Micronesia", "Moldova", "Monaco", "Mongolia", "Montenegro", "Morocco", "Mozambique", "Myanmar", "Namibia", "Nauru",
+  "Nepal", "Netherlands", "New Zealand", "Nicaragua", "Niger", "Nigeria", "North Korea", "North Macedonia", "Norway", "Oman",
+  "Pakistan", "Palau", "Palestine", "Panama", "Papua New Guinea", "Paraguay", "Peru", "Philippines", "Poland", "Portugal",
+  "Qatar", "Romania", "Russia", "Rwanda", "Saint Kitts and Nevis", "Saint Lucia", "Saint Vincent and the Grenadines", "Samoa", "San Marino", "Sao Tome and Principe",
+  "Saudi Arabia", "Senegal", "Serbia", "Seychelles", "Sierra Leone", "Singapore", "Slovakia", "Slovenia", "Solomon Islands", "Somalia",
+  "South Africa", "South Korea", "South Sudan", "Spain", "Sri Lanka", "Sudan", "Suriname", "Sweden", "Switzerland", "Syria",
+  "Taiwan", "Tajikistan", "Tanzania", "Thailand", "Timor-Leste", "Togo", "Tonga", "Trinidad and Tobago", "Tunisia", "Turkey",
+  "Turkmenistan", "Tuvalu", "Uganda", "Ukraine", "United Arab Emirates", "United Kingdom", "United States", "Uruguay", "Uzbekistan", "Vanuatu",
+  "Vatican City", "Venezuela", "Vietnam", "Yemen", "Zambia", "Zimbabwe"
+]
+
+// Animated Counter
+const AnimatedCounter = ({ value, duration = 2 }: { value: number; duration?: number }) => {
+  const [count, setCount] = useState(0)
+
+  useEffect(() => {
+    let startTime: number
+    let animationFrame: number
+
+    const animate = (timestamp: number) => {
+      if (!startTime) startTime = timestamp
+      const progress = (timestamp - startTime) / (duration * 1000)
+
+      if (progress < 1) {
+        setCount(Math.floor(value * progress))
+        animationFrame = requestAnimationFrame(animate)
+      } else {
+        setCount(value)
+      }
+    }
+
+    animationFrame = requestAnimationFrame(animate)
+    return () => cancelAnimationFrame(animationFrame)
+  }, [value, duration])
+
+  return <span>{count.toLocaleString()}</span>
 }
 
-interface WaitlistFormProps {
-  onSubmit: (data: FormData) => void
-  showHeadline?: boolean
-}
-
-function WaitlistForm({ onSubmit, showHeadline = true }: WaitlistFormProps) {
-  const [formData, setFormData] = useState<FormData>({
-    name: '',
-    phone: '',
-    email: '',
-    country: ''
-  })
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    onSubmit(formData)
-  }
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    })
-  }
-
+// Logo Component
+const Logo = ({ className }: { className?: string }) => {
   return (
-    <div>
-      {showHeadline && (
-        <div className="text-center mb-6">
-          <h3 className="text-2xl font-bold mb-2 text-foreground">Join the Early Access Waitlist</h3>
-          <p className="text-muted-foreground">
-            Early access users will receive priority onboarding and exclusive beta features.
-          </p>
-        </div>
-      )}
-      <form onSubmit={handleSubmit} className="space-y-3">
-        <Input
-          type="text"
-          name="name"
-          placeholder="Full Name"
-          value={formData.name}
-          onChange={handleInputChange}
-          required
-          className="h-12"
-        />
-        <Input
-          type="tel"
-          name="phone"
-          placeholder="Phone Number"
-          value={formData.phone}
-          onChange={handleInputChange}
-          required
-          className="h-12"
-        />
-        <Input
-          type="email"
-          name="email"
-          placeholder="Email Address"
-          value={formData.email}
-          onChange={handleInputChange}
-          required
-          className="h-12"
-        />
-        <Input
-          type="text"
-          name="country"
-          placeholder="Country"
-          value={formData.country}
-          onChange={handleInputChange}
-          required
-          className="h-12"
-        />
-        <Button type="submit" size="lg" className="w-full h-12 text-base">
-          Join the Waitlist
-          <ArrowRight className="ml-2 w-5 h-5" />
-        </Button>
-      </form>
+    <div className={cn("flex items-center gap-2", className)}>
+      <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#00A86B]">
+        <Wallet className="h-6 w-6 text-white" />
+      </div>
+      <span className="text-xl font-bold">
+        <span className="text-foreground">Wurie</span>
+        <span className="text-[#00A86B]">Pay</span>
+      </span>
     </div>
   )
 }
 
-export default function WuriePayLanding() {
-  const [waitlistCount] = useState(5482)
+// Header
+const Header = () => {
+  const [isOpen, setIsOpen] = useState(false)
+  const [isScrolled, setIsScrolled] = useState(false)
 
-  const handleWaitlistSubmit = (data: FormData) => {
-    console.log('Waitlist submission:', data)
-    alert('Thank you for joining the waitlist! Check your email for next steps.')
-  }
+  useEffect(() => {
+    const handleScroll = () => setIsScrolled(window.scrollY > 50)
+    window.addEventListener("scroll", handleScroll)
+    return () => window.removeEventListener("scroll", handleScroll)
+  }, [])
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-primary/5 via-background to-primary/10 border-b border-border">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,rgba(0,168,107,0.08),transparent_50%)]" />
-        <div className="container mx-auto px-4 py-16 md:py-24 relative z-10">
+    <header className={cn(
+      "fixed top-0 z-50 w-full transition-all duration-300",
+      isScrolled && "border-b bg-background/80 backdrop-blur-lg"
+    )}>
+      <nav className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="flex h-16 items-center justify-between">
+          <Logo />
+          
+          <div className="hidden items-center gap-8 md:flex">
+            <a href="#features" className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">Features</a>
+            <a href="#solution" className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">Solution</a>
+            <a href="#security" className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">Security</a>
+            <a href="#team" className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">Team</a>
+          </div>
+
+          <Button className="hidden md:inline-flex bg-[#00A86B] hover:bg-[#00A86B]/90">
+            Join Waitlist
+          </Button>
+
+          <button onClick={() => setIsOpen(!isOpen)} className="md:hidden">
+            {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+          </button>
+        </div>
+
+        <AnimatePresence>
+          {isOpen && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              className="md:hidden"
+            >
+              <div className="space-y-4 py-4">
+                <a href="#features" className="block text-sm font-medium">Features</a>
+                <a href="#solution" className="block text-sm font-medium">Solution</a>
+                <a href="#security" className="block text-sm font-medium">Security</a>
+                <a href="#team" className="block text-sm font-medium">Team</a>
+                <Button className="w-full bg-[#00A86B] hover:bg-[#00A86B]/90">Join Waitlist</Button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </nav>
+    </header>
+  )
+}
+
+// Hero Section with Inline Waitlist
+const HeroSection = () => {
+  const [formData, setFormData] = useState({ name: "", phone: "", email: "", country: "" })
+
+  return (
+    <section className="relative overflow-hidden pt-24 pb-16 md:pt-32 md:pb-24">
+      {/* Animated background */}
+      <div className="absolute inset-0 -z-10">
+        <div className="absolute left-1/4 top-0 h-[500px] w-[500px] rounded-full bg-[#00A86B]/20 blur-3xl" />
+        <div className="absolute right-1/4 top-1/4 h-[600px] w-[600px] rounded-full bg-teal-500/20 blur-3xl" />
+      </div>
+
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="grid gap-12 lg:grid-cols-2 lg:gap-16">
+          {/* Left Content */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="max-w-6xl mx-auto"
+            className="flex flex-col justify-center"
           >
-            {/* Logo */}
-            <div className="flex justify-center lg:justify-start mb-8">
-              <Image
-                src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/wuriepay-logo-EDnXEa8UX7aE4rzLWQhGkU3Q4vIktk.png"
-                alt="WuriePay"
-                width={180}
-                height={60}
-                className="h-14 w-auto"
-              />
-            </div>
+            <Badge className="mb-4 w-fit bg-[#00A86B]/10 text-[#00A86B] hover:bg-[#00A86B]/20">
+              <Sparkles className="mr-1 h-3 w-3" />
+              Launching Soon
+            </Badge>
+            
+            <h1 className="text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl">
+              The Future of Finance in Africa{" "}
+              <span className="text-[#00A86B]">
+                Starts Here
+              </span>
+            </h1>
+            
+            <p className="mt-6 text-lg text-muted-foreground">
+              Send money, pay bills, and manage your finances with AI — all inside one secure financial platform designed for Africa.
+            </p>
 
-            <div className="grid lg:grid-cols-2 gap-12 items-center">
-              {/* Left: Value Proposition */}
-              <div className="text-center lg:text-left">
-                <Badge className="mb-4 px-4 py-2 text-sm" variant="secondary">
-                  <Clock className="w-3 h-3 mr-2 inline" />
-                  Launching Soon 2026
-                </Badge>
-                <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight text-balance">
-                  The Future of Finance in Africa Starts Here
-                </h1>
-                <p className="text-xl md:text-2xl text-muted-foreground mb-8">
-                  Send money, pay bills, and manage your finances with AI — all inside one secure financial platform designed for Africa.
-                </p>
-                
-                {/* Trust Indicators */}
-                <div className="flex flex-wrap gap-6 justify-center lg:justify-start mb-8">
-                  <div className="flex items-center gap-2 text-sm">
-                    <Shield className="w-5 h-5 text-primary" />
-                    <span className="font-medium">Bank-Level Security</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-sm">
-                    <Brain className="w-5 h-5 text-primary" />
-                    <span className="font-medium">AI-Powered</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-sm">
-                    <Globe className="w-5 h-5 text-primary" />
-                    <span className="font-medium">50+ Countries</span>
-                  </div>
-                </div>
-
-                {/* Phone Mockup - Mobile only */}
-                <div className="lg:hidden flex justify-center mb-8">
-                  <div className="relative">
-                    <div className="absolute inset-0 bg-primary/20 blur-3xl rounded-full scale-75" />
-                    <div className="relative bg-[#1a1a1a] rounded-[2.5rem] p-2 shadow-2xl">
-                      <div className="rounded-[2rem] overflow-hidden w-56">
-                        <Image
-                          src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Screen%20Shot%202026-02-14%20at%204.03.22%20AM-8OpcurHBhV7hxosnloCKgdN93t2HFz.png"
-                          alt="WuriePay App"
-                          width={224}
-                          height={480}
-                          className="w-full h-auto"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </div>
+            <div className="mt-8 flex flex-wrap gap-4">
+              <div className="flex items-center gap-2">
+                <CheckCircle2 className="h-5 w-5 text-[#00A86B]" />
+                <span className="text-sm">Secure & Encrypted</span>
               </div>
-
-              {/* Right: Waitlist Form + Phone Mockup */}
-              <div className="flex flex-col items-center gap-8">
-                <Card className="border-2 border-primary/20 shadow-2xl bg-card w-full max-w-md">
-                  <CardContent className="pt-6">
-                    <WaitlistForm onSubmit={handleWaitlistSubmit} />
-                  </CardContent>
-                </Card>
-
-                {/* Phone Mockup - Desktop only */}
-                <div className="hidden lg:block">
-                  <div className="relative">
-                    <div className="absolute inset-0 bg-primary/20 blur-3xl rounded-full scale-75" />
-                    <div className="relative bg-[#1a1a1a] rounded-[2.5rem] p-2 shadow-2xl">
-                      <div className="rounded-[2rem] overflow-hidden w-64">
-                        <Image
-                          src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Screen%20Shot%202026-02-14%20at%204.03.22%20AM-8OpcurHBhV7hxosnloCKgdN93t2HFz.png"
-                          alt="WuriePay App"
-                          width={256}
-                          height={550}
-                          className="w-full h-auto"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </div>
+              <div className="flex items-center gap-2">
+                <CheckCircle2 className="h-5 w-5 text-[#00A86B]" />
+                <span className="text-sm">AI-Powered</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <CheckCircle2 className="h-5 w-5 text-[#00A86B]" />
+                <span className="text-sm">Built for Africa</span>
               </div>
             </div>
           </motion.div>
-        </div>
-      </section>
 
-      {/* Social Proof Section */}
-      <section className="py-12 bg-muted/30 border-b border-border">
-        <div className="container mx-auto px-4">
+          {/* Right - Waitlist Form */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.5 }}
-            viewport={{ once: true }}
-            className="text-center"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
           >
-            <div className="inline-flex items-center gap-3 bg-primary/10 rounded-full px-6 py-3 mb-4">
-              <Users className="w-5 h-5 text-primary" />
-              <span className="text-lg font-semibold">
-                Join <span className="text-primary text-2xl font-bold">{waitlistCount.toLocaleString()}+</span> people already waiting for WuriePay
+            <Card className="border-2">
+              <CardHeader>
+                <CardTitle>Join the Early Access Waitlist</CardTitle>
+                <CardDescription>
+                  Early access users will receive priority onboarding and exclusive beta features.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <form className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="name">Full Name</Label>
+                    <Input
+                      id="name"
+                      placeholder="John Doe"
+                      value={formData.name}
+                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="phone">Phone Number</Label>
+                    <Input
+                      id="phone"
+                      type="tel"
+                      placeholder="+234 800 000 0000"
+                      value={formData.phone}
+                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="email">Email Address</Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      placeholder="you@example.com"
+                      value={formData.email}
+                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="country">Country</Label>
+                    <Select value={formData.country} onValueChange={(value) => setFormData({ ...formData, country: value })}>
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Select your country" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {allCountries.map((country) => (
+                          <SelectItem key={country} value={country.toLowerCase().replace(/\s+/g, '-')}>
+                            {country}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <Button type="submit" className="w-full bg-[#00A86B] hover:bg-[#00A86B]/90" size="lg">
+                    Join the Waitlist
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
+                </form>
+              </CardContent>
+            </Card>
+          </motion.div>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+// Social Proof Section
+const SocialProofSection = () => {
+  return (
+    <section className="border-y bg-muted/30 py-12">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold sm:text-3xl">
+            Join the growing community building the future of African finance
+          </h2>
+          <div className="mt-8 flex flex-col items-center justify-center gap-2">
+            <div className="flex items-center gap-2">
+              <Users className="h-8 w-8 text-[#00A86B]" />
+              <span className="text-4xl font-bold">
+                <AnimatedCounter value={12847} />
               </span>
             </div>
-            <p className="text-muted-foreground max-w-2xl mx-auto">
-              Join the growing community building the future of African finance — entrepreneurs, freelancers, and innovators are already here.
+            <p className="text-muted-foreground">
+              people already waiting for WuriePay
             </p>
-          </motion.div>
+          </div>
         </div>
-      </section>
+      </div>
+    </section>
+  )
+}
 
-      {/* Problem Section */}
-      <section className="py-20 md:py-28">
-        <div className="container mx-auto px-4">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
-            className="max-w-4xl mx-auto text-center mb-12"
-          >
-            <h2 className="text-3xl md:text-5xl font-bold mb-6 text-balance">
-              Financial Tools in Africa Are Outdated
-            </h2>
-            <p className="text-xl text-muted-foreground mb-12">
-              Traditional systems like SWIFT were not built for {"Africa's"} digital economy
-            </p>
-          </motion.div>
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
-            {[
-              { icon: <DollarSign className="w-6 h-6 text-primary" />, text: "Sending money internationally is expensive" },
-              { icon: <BarChart3 className="w-6 h-6 text-primary" />, text: "Financial tools are fragmented" },
-              { icon: <TrendingUp className="w-6 h-6 text-primary" />, text: "Small businesses lack analytics" },
-              { icon: <Users className="w-6 h-6 text-primary" />, text: "Many people remain excluded from modern banking" }
-            ].map((item, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                viewport={{ once: true }}
+// Problem Section
+const ProblemSection = () => {
+  const problems = [
+    { icon: DollarSign, title: "Cross-border payments are expensive", desc: "High fees drain resources from businesses and families" },
+    { icon: Users, title: "Millions remain unbanked", desc: "Traditional banking excludes too many people" },
+    { icon: TrendingUp, title: "Financial tools are fragmented", desc: "Managing money requires juggling multiple apps" },
+    { icon: Store, title: "Small businesses lack insights", desc: "Entrepreneurs need better financial analytics" },
+  ]
+
+  return (
+    <section className="py-16 md:py-24">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="text-center">
+          <h2 className="text-3xl font-bold sm:text-4xl lg:text-5xl">
+            Financial tools in Africa are outdated
+          </h2>
+          <p className="mx-auto mt-4 max-w-2xl text-lg text-muted-foreground">
+            {"Legacy infrastructure like SWIFT wasn't designed for modern digital economies. It's time for change."}
+          </p>
+        </div>
+
+        <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+          {problems.map((problem, index) => (
+            <motion.div
+              key={index}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: index * 0.1 }}
+            >
+              <Card className="h-full">
+                <CardHeader>
+                  <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-red-100 dark:bg-red-900/20">
+                    <problem.icon className="h-6 w-6 text-red-600" />
+                  </div>
+                  <CardTitle className="mt-4 text-lg">{problem.title}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-muted-foreground">{problem.desc}</p>
+                </CardContent>
+              </Card>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+// Solution Section
+const SolutionSection = () => {
+  const pillars = [
+    {
+      title: "Payments",
+      icon: Wallet,
+      features: ["Send and receive money", "Merchant payments", "Bill payments", "Digital wallet"],
+    },
+    {
+      title: "AI Finance",
+      icon: Brain,
+      features: ["Smart financial insights", "Automated budgeting", "AI financial assistant", "Credit scoring"],
+    },
+    {
+      title: "Global Infrastructure",
+      icon: Globe,
+      features: ["Cross-border payments", "Modern financial rails", "Digital asset support"],
+    },
+  ]
+
+  return (
+    <section id="solution" className="bg-muted/30 py-16 md:py-24">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="text-center">
+          <h2 className="text-3xl font-bold sm:text-4xl lg:text-5xl">Meet WuriePay</h2>
+          <p className="mx-auto mt-4 max-w-3xl text-lg text-muted-foreground">
+            WuriePay is a modern fintech platform designed for Africa that combines payments, artificial intelligence, and next-generation financial infrastructure into one powerful app.
+          </p>
+        </div>
+
+        <div className="mt-12 grid gap-8 md:grid-cols-3">
+          {pillars.map((pillar, index) => (
+            <motion.div
+              key={index}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: index * 0.15 }}
+            >
+              <Card className="h-full">
+                <CardHeader>
+                  <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-[#00A86B]">
+                    <pillar.icon className="h-7 w-7 text-white" />
+                  </div>
+                  <CardTitle className="mt-4">{pillar.title}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <ul className="space-y-2">
+                    {pillar.features.map((feature, idx) => (
+                      <li key={idx} className="flex items-start gap-2">
+                        <CheckCircle2 className="mt-0.5 h-4 w-4 text-[#00A86B]" />
+                        <span className="text-sm">{feature}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </CardContent>
+              </Card>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+// Product Preview Section
+const ProductPreviewSection = () => {
+  return (
+    <section className="py-16 md:py-24">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="text-center">
+          <h2 className="text-3xl font-bold sm:text-4xl lg:text-5xl">Designed for simplicity</h2>
+          <p className="mx-auto mt-4 max-w-2xl text-lg text-muted-foreground">
+            Designed to make managing money simple, intelligent, and secure.
+          </p>
+        </div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="mt-12"
+        >
+          <div className="relative overflow-hidden rounded-2xl border bg-gradient-to-br from-emerald-50 to-teal-50 p-8 dark:from-emerald-950/20 dark:to-teal-950/20">
+            <div className="grid gap-6 md:grid-cols-3">
+              <Card>
+                <CardHeader>
+                  <Wallet className="h-8 w-8 text-[#00A86B]" />
+                  <CardTitle className="mt-2">Wallet Dashboard</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-muted-foreground">View balances, transactions, and quick actions in one place</p>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardHeader>
+                  <Send className="h-8 w-8 text-[#00A86B]" />
+                  <CardTitle className="mt-2">Payment Screen</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-muted-foreground">Send money instantly with just a few taps</p>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardHeader>
+                  <BarChart3 className="h-8 w-8 text-[#00A86B]" />
+                  <CardTitle className="mt-2">AI Insights</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-muted-foreground">Smart analytics that help you understand your spending</p>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        </motion.div>
+      </div>
+    </section>
+  )
+}
+
+// Benefits Section
+const BenefitsSection = () => {
+  const benefits = [
+    { icon: Zap, title: "Send Money Instantly", desc: "Transfer money quickly and securely" },
+    { icon: CreditCard, title: "Pay Bills Easily", desc: "Pay utilities and everyday expenses from one place" },
+    { icon: PieChart, title: "Understand Your Money", desc: "AI insights help you track spending and improve financial habits" },
+    { icon: Store, title: "Built for African Businesses", desc: "Tools for merchants and entrepreneurs to accept payments and track revenue" },
+  ]
+
+  return (
+    <section id="features" className="bg-muted/30 py-16 md:py-24">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="text-center">
+          <h2 className="text-3xl font-bold sm:text-4xl lg:text-5xl">Everything you need</h2>
+        </div>
+
+        <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+          {benefits.map((benefit, index) => (
+            <motion.div
+              key={index}
+              initial={{ opacity: 0, scale: 0.9 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ delay: index * 0.1 }}
+              className="text-center"
+            >
+              <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-[#00A86B]">
+                <benefit.icon className="h-8 w-8 text-white" />
+              </div>
+              <h3 className="mt-4 text-lg font-semibold">{benefit.title}</h3>
+              <p className="mt-2 text-sm text-muted-foreground">{benefit.desc}</p>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+// Security Section
+const SecuritySection = () => {
+  const features = [
+    { icon: Shield, title: "Secure identity verification", desc: "Multi-factor authentication protects your account" },
+    { icon: Lock, title: "Advanced fraud monitoring", desc: "Real-time detection keeps your money safe" },
+    { icon: Eye, title: "Encrypted financial infrastructure", desc: "Bank-level encryption for all transactions" },
+    { icon: CheckCircle2, title: "Privacy-first technology", desc: "Your data is protected and never shared" },
+  ]
+
+  return (
+    <section id="security" className="py-16 md:py-24">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="text-center">
+          <h2 className="text-3xl font-bold sm:text-4xl lg:text-5xl">Security built into every transaction</h2>
+          <p className="mx-auto mt-4 max-w-2xl text-lg text-muted-foreground">
+            Your security is our top priority. We use industry-leading technology to keep your money and data safe.
+          </p>
+        </div>
+
+        <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          {features.map((feature, index) => (
+            <motion.div
+              key={index}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: index * 0.1 }}
+              className="text-center"
+            >
+              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/20">
+                <feature.icon className="h-7 w-7 text-[#00A86B]" />
+              </div>
+              <h3 className="mt-4 font-semibold">{feature.title}</h3>
+              <p className="mt-2 text-sm text-muted-foreground">{feature.desc}</p>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+// Team Section
+const TeamSection = () => {
+  const team = [
+    {
+      name: "Alhaji Wurie Jalloh",
+      role: "Co-Founder & CEO",
+      bio: "Entrepreneur focused on building financial infrastructure for Africa's digital economy.",
+      image: "https://api.dicebear.com/7.x/avataaars/svg?seed=alhaji&backgroundColor=b6e3f4",
+    },
+    {
+      name: "Hassan Wurie Jalloh",
+      role: "Co-Founder & COO",
+      bio: "Responsible for operations, partnerships, and scaling the WuriePay platform.",
+      image: "https://api.dicebear.com/7.x/avataaars/svg?seed=hassan&backgroundColor=c0aede",
+    },
+  ]
+
+  return (
+    <section id="team" className="bg-muted/30 py-16 md:py-24">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="text-center">
+          <h2 className="text-3xl font-bold sm:text-4xl lg:text-5xl">
+            {"Built by founders committed to Africa's financial future"}
+          </h2>
+        </div>
+
+        <div className="mt-12 grid gap-8 md:grid-cols-2">
+          {team.map((member, index) => (
+            <motion.div
+              key={index}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: index * 0.2 }}
+            >
+              <Card className="overflow-hidden">
+                <div className="flex flex-col items-center p-8 text-center sm:flex-row sm:text-left">
+                  <img
+                    src={member.image}
+                    alt={member.name}
+                    className="h-32 w-32 rounded-full"
+                  />
+                  <div className="mt-4 sm:ml-6 sm:mt-0">
+                    <h3 className="text-xl font-bold">{member.name}</h3>
+                    <p className="mt-1 text-sm font-medium text-[#00A86B]">{member.role}</p>
+                    <p className="mt-3 text-sm text-muted-foreground">{member.bio}</p>
+                  </div>
+                </div>
+              </Card>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+// Referral/Invite Section
+const ReferralSection = () => {
+  const rewards = [
+    { icon: Target, count: 3, title: "Priority Access", desc: "Get early access to WuriePay" },
+    { icon: Award, count: 10, title: "Beta Tester Access", desc: "Join our exclusive beta program" },
+    { icon: Gift, count: 25, title: "Founder Q&A Session", desc: "Meet the team behind WuriePay" },
+  ]
+
+  const shareLinks = [
+    { 
+      name: "WhatsApp", 
+      color: "bg-[#25D366] hover:bg-[#25D366]/90",
+      icon: (
+        <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+        </svg>
+      )
+    },
+    { 
+      name: "Facebook", 
+      color: "bg-[#1877F2] hover:bg-[#1877F2]/90",
+      icon: (
+        <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+        </svg>
+      )
+    },
+    { 
+      name: "Instagram", 
+      color: "bg-gradient-to-r from-[#833AB4] via-[#FD1D1D] to-[#F77737] hover:opacity-90",
+      icon: (
+        <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+        </svg>
+      )
+    },
+    { 
+      name: "X", 
+      color: "bg-black hover:bg-black/90 dark:bg-white dark:text-black dark:hover:bg-white/90",
+      icon: (
+        <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+        </svg>
+      )
+    },
+    { 
+      name: "Email", 
+      color: "bg-gray-600 hover:bg-gray-600/90",
+      icon: <Mail className="h-5 w-5" />
+    },
+  ]
+
+  return (
+    <section className="py-16 md:py-24">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="text-center">
+          <h2 className="text-3xl font-bold sm:text-4xl lg:text-5xl">Move up the waitlist</h2>
+          <p className="mx-auto mt-4 max-w-2xl text-lg text-muted-foreground">
+            Invite friends and move higher in the early access list
+          </p>
+        </div>
+
+        <div className="mt-12 grid gap-8 md:grid-cols-3">
+          {rewards.map((reward, index) => (
+            <motion.div
+              key={index}
+              initial={{ opacity: 0, scale: 0.9 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ delay: index * 0.15 }}
+            >
+              <Card className="text-center">
+                <CardHeader>
+                  <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-[#00A86B]">
+                    <reward.icon className="h-8 w-8 text-white" />
+                  </div>
+                  <Badge className="mx-auto mt-4 w-fit bg-[#00A86B]/10 text-[#00A86B] hover:bg-[#00A86B]/20">Invite {reward.count} friends</Badge>
+                  <CardTitle className="mt-2">{reward.title}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-muted-foreground">{reward.desc}</p>
+                </CardContent>
+              </Card>
+            </motion.div>
+          ))}
+        </div>
+
+        {/* Share Buttons */}
+        <div className="mt-12 text-center">
+          <p className="mb-6 text-lg font-medium">Share with friends</p>
+          <div className="flex flex-wrap justify-center gap-4">
+            {shareLinks.map((link, index) => (
+              <Button 
+                key={index} 
+                className={cn("text-white", link.color)}
+                size="lg"
               >
-                <Card className="text-center h-full border-border bg-card hover:shadow-lg transition-shadow">
-                  <CardContent className="pt-6">
-                    <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
-                      {item.icon}
-                    </div>
-                    <p className="text-muted-foreground font-medium">{item.text}</p>
-                  </CardContent>
-                </Card>
-              </motion.div>
+                {link.icon}
+                <span className="ml-2">{link.name}</span>
+              </Button>
             ))}
           </div>
         </div>
-      </section>
+      </div>
+    </section>
+  )
+}
 
-      {/* Solution Section */}
-      <section className="py-20 md:py-28 bg-muted/30">
-        <div className="container mx-auto px-4">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
-            className="max-w-4xl mx-auto text-center mb-16"
-          >
-            <h2 className="text-3xl md:text-5xl font-bold mb-6">Meet WuriePay</h2>
-            <p className="text-xl text-muted-foreground">
-              WuriePay is a next-generation financial platform that combines payments, artificial intelligence, and modern financial infrastructure into a single application.
-            </p>
-          </motion.div>
-          <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-            {[
-              {
-                icon: <Wallet className="w-8 h-8 text-primary" />,
-                title: "Payments",
-                features: ["Send and receive money", "Merchant payments", "Bill payments", "Digital wallet"]
-              },
-              {
-                icon: <Brain className="w-8 h-8 text-primary" />,
-                title: "AI Finance",
-                features: ["Smart financial insights", "Automated budgeting", "Credit scoring", "AI assistant"]
-              },
-              {
-                icon: <Globe className="w-8 h-8 text-primary" />,
-                title: "Global Infrastructure",
-                features: ["Cross-border payments", "Stable digital assets", "Modern financial rails", "50+ countries"]
-              }
-            ].map((pillar, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, scale: 0.95 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                viewport={{ once: true }}
-              >
-                <Card className="h-full border-border bg-gradient-to-br from-card to-card/50 hover:shadow-xl transition-all">
-                  <CardHeader>
-                    <div className="w-16 h-16 rounded-xl bg-primary/20 flex items-center justify-center mb-4">
-                      {pillar.icon}
-                    </div>
-                    <CardTitle className="text-2xl">{pillar.title}</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <ul className="space-y-3">
-                      {pillar.features.map((feature, i) => (
-                        <li key={i} className="flex items-start gap-2">
-                          <CheckCircle className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
-                          <span className="text-muted-foreground">{feature}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
-          </div>
+// Final CTA Section
+const FinalCTASection = () => {
+  const [formData, setFormData] = useState({ name: "", phone: "", email: "", country: "" })
+
+  return (
+    <section className="bg-[#00A86B] py-16 md:py-24">
+      <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
+        <div className="text-center text-white">
+          <h2 className="text-3xl font-bold sm:text-4xl lg:text-5xl">
+            Be among the first to access WuriePay
+          </h2>
+          <p className="mx-auto mt-4 max-w-2xl text-lg text-white/90">
+            Join the early access list and receive updates about the upcoming launch.
+          </p>
         </div>
-      </section>
 
-      {/* Product Preview Section */}
-      <section className="py-20 md:py-28">
-        <div className="container mx-auto px-4">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
-            className="max-w-4xl mx-auto text-center mb-12"
-          >
-            <h2 className="text-3xl md:text-5xl font-bold mb-6 text-balance">
-              Simple, Intelligent, and Secure
-            </h2>
-            <p className="text-xl text-muted-foreground">
-              Designed to make managing money effortless
-            </p>
-          </motion.div>
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true }}
-            className="max-w-4xl mx-auto"
-          >
-            <div className="flex flex-col md:flex-row items-center justify-center gap-8">
-              {/* Phone Mockup */}
-              <div className="relative">
-                <div className="absolute inset-0 bg-primary/20 blur-3xl rounded-full scale-90" />
-                <div className="relative bg-[#1a1a1a] rounded-[3rem] p-3 shadow-2xl">
-                  <div className="rounded-[2.5rem] overflow-hidden w-72">
-                    <Image
-                      src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Screen%20Shot%202026-02-14%20at%204.03.22%20AM-8OpcurHBhV7hxosnloCKgdN93t2HFz.png"
-                      alt="WuriePay App - Full Dashboard"
-                      width={288}
-                      height={620}
-                      className="w-full h-auto"
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="mt-12"
+        >
+          <Card>
+            <CardContent className="p-6">
+              <form className="space-y-4">
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <div className="space-y-2">
+                    <Label htmlFor="final-name">Full Name</Label>
+                    <Input
+                      id="final-name"
+                      placeholder="John Doe"
+                      value={formData.name}
+                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="final-phone">Phone Number</Label>
+                    <Input
+                      id="final-phone"
+                      type="tel"
+                      placeholder="+234 800 000 0000"
+                      value={formData.phone}
+                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                     />
                   </div>
                 </div>
-              </div>
 
-              {/* Balance Card Preview */}
-              <div className="flex flex-col gap-6">
-                <div className="rounded-2xl overflow-hidden shadow-xl">
-                  <Image
-                    src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Screen%20Shot%202026-02-14%20at%204.03.22%20AM%20copy-LxayNz8Zr3l590jwlIA3Cy3fv641JK.png"
-                    alt="WuriePay Wallet Balance Card"
-                    width={320}
-                    height={180}
-                    className="w-80 h-auto"
-                  />
-                </div>
-                <div className="text-center md:text-left">
-                  <p className="font-semibold text-foreground mb-1">Multi-Currency Wallet</p>
-                  <p className="text-sm text-muted-foreground">Support for GNF, SLL, USD, and more</p>
-                </div>
-              </div>
-            </div>
-            <p className="text-center text-muted-foreground mt-8 italic">
-              Wallet dashboard, payment interface, and AI financial insights
-            </p>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Key Benefits Section */}
-      <section className="py-20 md:py-28 bg-muted/30">
-        <div className="container mx-auto px-4">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
-            className="max-w-4xl mx-auto text-center mb-16"
-          >
-            <h2 className="text-3xl md:text-5xl font-bold mb-6">Why Choose WuriePay</h2>
-            <p className="text-xl text-muted-foreground">
-              Real outcomes for real people
-            </p>
-          </motion.div>
-          <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-            {[
-              {
-                icon: <Zap className="w-8 h-8 text-primary" />,
-                title: "Send Money Instantly",
-                description: "Transfer money quickly and securely to anyone, anywhere."
-              },
-              {
-                icon: <DollarSign className="w-8 h-8 text-primary" />,
-                title: "Pay Bills in Seconds",
-                description: "Manage utilities and everyday expenses from one place."
-              },
-              {
-                icon: <Brain className="w-8 h-8 text-primary" />,
-                title: "Understand Your Money",
-                description: "AI insights help users track spending and plan better finances."
-              },
-              {
-                icon: <Building2 className="w-8 h-8 text-primary" />,
-                title: "Built for African Businesses",
-                description: "Tools that help entrepreneurs accept payments and grow revenue."
-              }
-            ].map((benefit, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, x: index % 2 === 0 ? -20 : 20 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-                viewport={{ once: true }}
-              >
-                <Card className="h-full border-border bg-card hover:shadow-lg transition-shadow">
-                  <CardHeader>
-                    <div className="w-14 h-14 rounded-lg bg-primary/10 flex items-center justify-center mb-3">
-                      {benefit.icon}
-                    </div>
-                    <CardTitle className="text-xl">{benefit.title}</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <CardDescription className="text-base">{benefit.description}</CardDescription>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Security Section */}
-      <section className="py-20 md:py-28 bg-gradient-to-br from-primary/5 to-background">
-        <div className="container mx-auto px-4">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
-            className="max-w-4xl mx-auto text-center mb-16"
-          >
-            <h2 className="text-3xl md:text-5xl font-bold mb-6 text-balance">Security and Trust Built Into the Platform</h2>
-            <p className="text-xl text-muted-foreground">
-              Your money and data are protected with industry-leading security
-            </p>
-          </motion.div>
-          <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
-            {[
-              { icon: <Shield className="w-6 h-6 text-primary" />, text: "Secure identity verification" },
-              { icon: <Lock className="w-6 h-6 text-primary" />, text: "Advanced fraud monitoring" },
-              { icon: <CheckCircle className="w-6 h-6 text-primary" />, text: "Encrypted financial infrastructure" }
-            ].map((item, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                viewport={{ once: true }}
-              >
-                <Card className="text-center h-full border-border bg-card">
-                  <CardContent className="pt-6">
-                    <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
-                      {item.icon}
-                    </div>
-                    <p className="font-semibold">{item.text}</p>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Founder Section */}
-      <section className="py-20 md:py-28 bg-muted/30">
-        <div className="container mx-auto px-4">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
-            className="max-w-4xl mx-auto text-center mb-16"
-          >
-            <h2 className="text-3xl md:text-5xl font-bold mb-6 text-balance">
-              Built by Founders Committed to {"Africa's"} Financial Future
-            </h2>
-          </motion.div>
-          <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-            {[
-              {
-                name: "Alhaji Wurie Jalloh",
-                role: "Co-Founder & CEO",
-                bio: "Entrepreneur focused on building financial technology infrastructure for Africa."
-              },
-              {
-                name: "Hassan Wurie Jalloh",
-                role: "Co-Founder & COO",
-                bio: "Responsible for operations, partnerships, and scaling the platform."
-              }
-            ].map((founder, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                viewport={{ once: true }}
-              >
-                <Card className="h-full border-border bg-card hover:shadow-lg transition-shadow">
-                  <CardHeader>
-                    <div className="w-24 h-24 rounded-full bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center mb-4 mx-auto">
-                      <Users className="w-12 h-12 text-primary" />
-                    </div>
-                    <CardTitle className="text-xl text-center">{founder.name}</CardTitle>
-                    <CardDescription className="text-center font-semibold text-primary text-base">{founder.role}</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-muted-foreground text-center">{founder.bio}</p>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Referral Growth Section */}
-      <section className="py-20 md:py-28 bg-gradient-to-br from-primary/10 via-background to-primary/5">
-        <div className="container mx-auto px-4">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
-            className="max-w-3xl mx-auto"
-          >
-            <Card className="border-2 border-primary/30 shadow-2xl bg-card">
-              <CardHeader className="text-center">
-                <div className="w-16 h-16 rounded-full bg-primary/20 flex items-center justify-center mx-auto mb-4">
-                  <Share2 className="w-8 h-8 text-primary" />
-                </div>
-                <CardTitle className="text-3xl md:text-4xl mb-4">Move Up the Waitlist</CardTitle>
-                <CardDescription className="text-lg">
-                  Invite friends and move up the early access list
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="flex items-center gap-4 p-4 bg-muted/50 rounded-lg">
-                    <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
-                      <Award className="w-6 h-6 text-primary" />
-                    </div>
-                    <div>
-                      <div className="font-semibold">{"Invite 3 friends → Priority Access"}</div>
-                      <div className="text-sm text-muted-foreground">Get early access to the platform</div>
-                    </div>
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <div className="space-y-2">
+                    <Label htmlFor="final-email">Email Address</Label>
+                    <Input
+                      id="final-email"
+                      type="email"
+                      placeholder="you@example.com"
+                      value={formData.email}
+                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    />
                   </div>
-                  <div className="flex items-center gap-4 p-4 bg-muted/50 rounded-lg">
-                    <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
-                      <Award className="w-6 h-6 text-primary" />
-                    </div>
-                    <div>
-                      <div className="font-semibold">{"Invite 10 friends → Beta Testing Access"}</div>
-                      <div className="text-sm text-muted-foreground">Help shape the product before launch</div>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-4 p-4 bg-muted/50 rounded-lg">
-                    <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
-                      <Award className="w-6 h-6 text-primary" />
-                    </div>
-                    <div>
-                      <div className="font-semibold">{"Invite 25 friends → Exclusive Founder Call"}</div>
-                      <div className="text-sm text-muted-foreground">Direct conversation with the founders</div>
-                    </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="final-country">Country</Label>
+                    <Select value={formData.country} onValueChange={(value) => setFormData({ ...formData, country: value })}>
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Select your country" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {allCountries.map((country) => (
+                          <SelectItem key={country} value={country.toLowerCase().replace(/\s+/g, '-')}>
+                            {country}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
                 </div>
-                <Button size="lg" className="w-full mt-6" variant="default">
-                  <Share2 className="mr-2 w-5 h-5" />
-                  Get Your Referral Link
+
+                <Button type="submit" className="w-full bg-[#00A86B] hover:bg-[#00A86B]/90" size="lg">
+                  Join the Waitlist
+                  <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
-              </CardContent>
-            </Card>
-          </motion.div>
-        </div>
-      </section>
+              </form>
+            </CardContent>
+          </Card>
+        </motion.div>
+      </div>
+    </section>
+  )
+}
 
-      {/* Final Conversion Section */}
-      <section className="py-20 md:py-28 bg-muted/30">
-        <div className="container mx-auto px-4">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
-            className="max-w-2xl mx-auto"
-          >
-            <Card className="border-2 border-primary/20 shadow-2xl bg-card">
-              <CardHeader className="text-center">
-                <CardTitle className="text-3xl md:text-4xl mb-4">
-                  Be Among the First to Access WuriePay
-                </CardTitle>
-                <CardDescription className="text-lg">
-                  Join the early access list and receive updates about the upcoming launch
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <WaitlistForm onSubmit={handleWaitlistSubmit} showHeadline={false} />
-              </CardContent>
-            </Card>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Footer */}
-      <footer className="bg-muted/50 border-t border-border py-12">
-        <div className="container mx-auto px-4">
-          <div className="grid md:grid-cols-4 gap-8 mb-8">
-            <div className="md:col-span-2">
-              <div className="flex items-center gap-3 mb-4">
-                <Image
-                  src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/wuriepay-logo-EDnXEa8UX7aE4rzLWQhGkU3Q4vIktk.png"
-                  alt="WuriePay"
-                  width={140}
-                  height={50}
-                  className="h-10 w-auto"
-                />
-              </div>
-              <p className="text-xs text-muted-foreground mb-1">by WurieGroup</p>
-              <p className="text-muted-foreground mb-4">
-                {"Africa's"} AI-Powered Financial Platform
-              </p>
-              <div className="flex gap-4">
-                <a href="#" className="text-muted-foreground hover:text-primary transition-colors">
-                  <Twitter className="w-5 h-5" />
-                </a>
-                <a href="#" className="text-muted-foreground hover:text-primary transition-colors">
-                  <Linkedin className="w-5 h-5" />
-                </a>
-                <a href="mailto:contact@wuriepay.com" className="text-muted-foreground hover:text-primary transition-colors">
-                  <Mail className="w-5 h-5" />
-                </a>
-              </div>
-            </div>
-            <div>
-              <h3 className="font-semibold mb-4">Company</h3>
-              <ul className="space-y-2 text-muted-foreground">
-                <li><a href="#" className="hover:text-primary transition-colors">About</a></li>
-                <li><a href="#" className="hover:text-primary transition-colors">Careers</a></li>
-                <li><a href="mailto:contact@wuriepay.com" className="hover:text-primary transition-colors">Contact</a></li>
-              </ul>
-            </div>
-            <div>
-              <h3 className="font-semibold mb-4">Legal</h3>
-              <ul className="space-y-2 text-muted-foreground">
-                <li><a href="#" className="hover:text-primary transition-colors">Privacy Policy</a></li>
-                <li><a href="#" className="hover:text-primary transition-colors">Terms of Service</a></li>
-              </ul>
+// Footer
+const Footer = () => {
+  return (
+    <footer className="border-t bg-muted/30 py-12">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="grid gap-8 md:grid-cols-4">
+          <div className="md:col-span-2">
+            <Logo />
+            <p className="mt-4 text-sm text-muted-foreground">A WurieGroup company</p>
+            <p className="mt-2 text-sm text-muted-foreground">
+              Building the future of finance in Africa
+            </p>
+            <div className="mt-4 flex gap-4">
+              <a href="#" className="text-muted-foreground hover:text-foreground">
+                <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                </svg>
+              </a>
+              <a href="#" className="text-muted-foreground hover:text-foreground">
+                <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                </svg>
+              </a>
+              <a href="mailto:hello@wuriepay.com" className="text-muted-foreground hover:text-foreground">
+                <Mail className="h-5 w-5" />
+              </a>
             </div>
           </div>
-          <Separator className="my-8" />
-          <div className="text-center text-muted-foreground text-sm">
-            <p>&copy; 2026 WuriePay by WurieGroup. All rights reserved.</p>
+
+          <div>
+            <h3 className="font-semibold">Product</h3>
+            <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
+              <li><a href="#features" className="hover:text-foreground">Features</a></li>
+              <li><a href="#solution" className="hover:text-foreground">Solution</a></li>
+              <li><a href="#security" className="hover:text-foreground">Security</a></li>
+              <li><a href="#team" className="hover:text-foreground">Team</a></li>
+            </ul>
+          </div>
+
+          <div>
+            <h3 className="font-semibold">Legal</h3>
+            <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
+              <li><a href="#" className="hover:text-foreground">Privacy Policy</a></li>
+              <li><a href="#" className="hover:text-foreground">Terms of Service</a></li>
+              <li><a href="#" className="hover:text-foreground">Contact</a></li>
+            </ul>
           </div>
         </div>
-      </footer>
+
+        <div className="mt-12 border-t pt-8 text-center text-sm text-muted-foreground">
+          <p>&copy; 2026 WuriePay by WurieGroup. All rights reserved.</p>
+        </div>
+      </div>
+    </footer>
+  )
+}
+
+// Main App
+export default function WuriePayLanding() {
+  return (
+    <div className="min-h-screen bg-background">
+      <Header />
+      <main>
+        <HeroSection />
+        <SocialProofSection />
+        <ProblemSection />
+        <SolutionSection />
+        <ProductPreviewSection />
+        <BenefitsSection />
+        <SecuritySection />
+        <TeamSection />
+        <ReferralSection />
+        <FinalCTASection />
+      </main>
+      <Footer />
     </div>
   )
 }
