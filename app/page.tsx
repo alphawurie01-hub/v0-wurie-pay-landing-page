@@ -125,6 +125,14 @@ const Header = () => {
     return () => window.removeEventListener("scroll", handleScroll)
   }, [])
 
+  const scrollToWaitlist = () => {
+    const waitlistSection = document.getElementById("waitlist-form")
+    if (waitlistSection) {
+      waitlistSection.scrollIntoView({ behavior: "smooth", block: "center" })
+    }
+    setIsOpen(false)
+  }
+
   return (
     <header className={cn(
       "fixed top-0 z-50 w-full transition-all duration-300",
@@ -141,11 +149,15 @@ const Header = () => {
             <a href="#team" className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">Team</a>
           </div>
 
-          <Button className="hidden md:inline-flex bg-[#00A86B] hover:bg-[#00A86B]/90">
+          <Button 
+            onClick={scrollToWaitlist}
+            className="hidden md:inline-flex bg-[#00A86B] hover:bg-[#00A86B]/90"
+            title="Be among the first to access WuriePay. Join the early access list and receive updates about the upcoming launch."
+          >
             Join Waitlist
           </Button>
 
-          <button onClick={() => setIsOpen(!isOpen)} className="md:hidden">
+          <button onClick={() => setIsOpen(!isOpen)} className="md:hidden" aria-label="Toggle menu">
             {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
           </button>
         </div>
@@ -163,7 +175,12 @@ const Header = () => {
                 <a href="#solution" className="block text-sm font-medium">Solution</a>
                 <a href="#security" className="block text-sm font-medium">Security</a>
                 <a href="#team" className="block text-sm font-medium">Team</a>
-                <Button className="w-full bg-[#00A86B] hover:bg-[#00A86B]/90">Join Waitlist</Button>
+                <Button 
+                  onClick={scrollToWaitlist}
+                  className="w-full bg-[#00A86B] hover:bg-[#00A86B]/90"
+                >
+                  Join Waitlist
+                </Button>
               </div>
             </motion.div>
           )}
@@ -226,6 +243,7 @@ const HeroSection = () => {
 
           {/* Right - Waitlist Form */}
           <motion.div
+            id="waitlist-form"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}

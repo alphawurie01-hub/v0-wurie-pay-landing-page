@@ -61,10 +61,15 @@ export async function joinWaitlist(
 ): Promise<WaitlistFormState> {
   try {
     // Extract and sanitize form data
+    // Use phone_full (combined country code + number) if available, otherwise fallback to phone
+    const phoneFull = formData.get("phone_full") as string
+    const phoneField = formData.get("phone") as string
+    const phoneValue = phoneFull && phoneFull.trim() !== "" ? phoneFull : phoneField
+    
     const rawData = {
       name: formData.get("name") as string,
       email: formData.get("email") as string,
-      phone: formData.get("phone") as string,
+      phone: phoneValue,
       country: formData.get("country") as string,
     }
 

@@ -13,6 +13,42 @@ import { cn } from "@/lib/utils"
 // Email validation regex for client-side
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
+// Country codes with flags for phone number dropdown
+const countryCodes = [
+  { code: "+232", country: "Sierra Leone", flag: "🇸🇱" },
+  { code: "+234", country: "Nigeria", flag: "🇳🇬" },
+  { code: "+233", country: "Ghana", flag: "🇬🇭" },
+  { code: "+254", country: "Kenya", flag: "🇰🇪" },
+  { code: "+27", country: "South Africa", flag: "🇿🇦" },
+  { code: "+20", country: "Egypt", flag: "🇪🇬" },
+  { code: "+212", country: "Morocco", flag: "🇲🇦" },
+  { code: "+256", country: "Uganda", flag: "🇺🇬" },
+  { code: "+255", country: "Tanzania", flag: "🇹🇿" },
+  { code: "+237", country: "Cameroon", flag: "🇨🇲" },
+  { code: "+225", country: "Ivory Coast", flag: "🇨🇮" },
+  { code: "+221", country: "Senegal", flag: "🇸🇳" },
+  { code: "+251", country: "Ethiopia", flag: "🇪🇹" },
+  { code: "+263", country: "Zimbabwe", flag: "🇿🇼" },
+  { code: "+260", country: "Zambia", flag: "🇿🇲" },
+  { code: "+267", country: "Botswana", flag: "🇧🇼" },
+  { code: "+265", country: "Malawi", flag: "🇲🇼" },
+  { code: "+258", country: "Mozambique", flag: "🇲🇿" },
+  { code: "+250", country: "Rwanda", flag: "🇷🇼" },
+  { code: "+231", country: "Liberia", flag: "🇱🇷" },
+  { code: "+220", country: "Gambia", flag: "🇬🇲" },
+  { code: "+224", country: "Guinea", flag: "🇬🇳" },
+  { code: "+229", country: "Benin", flag: "🇧🇯" },
+  { code: "+228", country: "Togo", flag: "🇹🇬" },
+  { code: "+1", country: "United States", flag: "🇺🇸" },
+  { code: "+44", country: "United Kingdom", flag: "🇬🇧" },
+  { code: "+33", country: "France", flag: "🇫🇷" },
+  { code: "+49", country: "Germany", flag: "🇩🇪" },
+  { code: "+971", country: "UAE", flag: "🇦🇪" },
+  { code: "+966", country: "Saudi Arabia", flag: "🇸🇦" },
+  { code: "+91", country: "India", flag: "🇮🇳" },
+  { code: "+86", country: "China", flag: "🇨🇳" },
+]
+
 // All countries list
 const allCountries = [
   "Afghanistan", "Albania", "Algeria", "Andorra", "Angola", "Antigua and Barbuda", "Argentina", "Armenia", "Australia", "Austria",
@@ -47,6 +83,8 @@ export function WaitlistForm({ variant = "default", idPrefix = "", className }: 
   const [state, formAction, isPending] = useActionState<WaitlistFormState | null, FormData>(joinWaitlist, null)
   const [country, setCountry] = useState("")
   const [email, setEmail] = useState("")
+  const [phoneCode, setPhoneCode] = useState("+232") // Default to Sierra Leone
+  const [phoneNumber, setPhoneNumber] = useState("")
   const [emailStatus, setEmailStatus] = useState<"idle" | "checking" | "available" | "taken" | "invalid">("idle")
   const emailCheckTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const formRef = useRef<HTMLFormElement>(null)
@@ -102,6 +140,8 @@ export function WaitlistForm({ variant = "default", idPrefix = "", className }: 
     if (state?.success) {
       setCountry("")
       setEmail("")
+      setPhoneCode("+232")
+      setPhoneNumber("")
       setEmailStatus("idle")
       formRef.current?.reset()
     }
@@ -169,14 +209,37 @@ export function WaitlistForm({ variant = "default", idPrefix = "", className }: 
             </div>
             <div className="space-y-2">
               <Label htmlFor={`${idPrefix}phone`}>Phone Number</Label>
-              <Input
-                id={`${idPrefix}phone`}
-                name="phone"
-                type="tel"
-                placeholder="+232 76 000 000"
-                aria-invalid={!!state?.errors?.phone}
-                className={cn(state?.errors?.phone && "border-destructive")}
-              />
+              <div className="flex gap-2">
+                <Select value={phoneCode} onValueChange={setPhoneCode}>
+                  <SelectTrigger className="w-[110px] shrink-0">
+                    <SelectValue>
+                      {countryCodes.find(c => c.code === phoneCode)?.flag} {phoneCode}
+                    </SelectValue>
+                  </SelectTrigger>
+                  <SelectContent>
+                    {countryCodes.map((c) => (
+                      <SelectItem key={c.code} value={c.code}>
+                        <span className="flex items-center gap-2">
+                          <span>{c.flag}</span>
+                          <span>{c.code}</span>
+                          <span className="text-muted-foreground text-xs">{c.country}</span>
+                        </span>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Input
+                  id={`${idPrefix}phone`}
+                  name="phone"
+                  type="tel"
+                  placeholder="76 000 000"
+                  value={phoneNumber}
+                  onChange={(e) => setPhoneNumber(e.target.value)}
+                  aria-invalid={!!state?.errors?.phone}
+                  className={cn("flex-1", state?.errors?.phone && "border-destructive")}
+                />
+                <input type="hidden" name="phone_full" value={phoneNumber ? `${phoneCode} ${phoneNumber}` : ""} />
+              </div>
               {state?.errors?.phone && (
                 <p className="text-xs text-destructive">{state.errors.phone[0]}</p>
               )}
@@ -266,14 +329,37 @@ export function WaitlistForm({ variant = "default", idPrefix = "", className }: 
 
           <div className="space-y-2">
             <Label htmlFor={`${idPrefix}phone`}>Phone Number</Label>
-            <Input
-              id={`${idPrefix}phone`}
-              name="phone"
-              type="tel"
-              placeholder="+232 76 000 000"
-              aria-invalid={!!state?.errors?.phone}
-              className={cn(state?.errors?.phone && "border-destructive")}
-            />
+            <div className="flex gap-2">
+              <Select value={phoneCode} onValueChange={setPhoneCode}>
+                <SelectTrigger className="w-[110px] shrink-0">
+                  <SelectValue>
+                    {countryCodes.find(c => c.code === phoneCode)?.flag} {phoneCode}
+                  </SelectValue>
+                </SelectTrigger>
+                <SelectContent>
+                  {countryCodes.map((c) => (
+                    <SelectItem key={c.code} value={c.code}>
+                      <span className="flex items-center gap-2">
+                        <span>{c.flag}</span>
+                        <span>{c.code}</span>
+                        <span className="text-muted-foreground text-xs">{c.country}</span>
+                      </span>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Input
+                id={`${idPrefix}phone`}
+                name="phone"
+                type="tel"
+                placeholder="76 000 000"
+                value={phoneNumber}
+                onChange={(e) => setPhoneNumber(e.target.value)}
+                aria-invalid={!!state?.errors?.phone}
+                className={cn("flex-1", state?.errors?.phone && "border-destructive")}
+              />
+              <input type="hidden" name="phone_full" value={phoneNumber ? `${phoneCode} ${phoneNumber}` : ""} />
+            </div>
             {state?.errors?.phone && (
               <p className="text-xs text-destructive">{state.errors.phone[0]}</p>
             )}
