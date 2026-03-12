@@ -1,14 +1,53 @@
 "use client"
 
-import { useActionState, useEffect, useState } from "react"
+import { useActionState, useEffect, useState, useCallback, useRef } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { joinWaitlist, type WaitlistFormState } from "@/app/actions/waitlist"
-import { ArrowRight, CheckCircle2, Loader2, AlertCircle } from "lucide-react"
+import { joinWaitlist, checkEmailExists, type WaitlistFormState } from "@/app/actions/waitlist"
+import { ArrowRight, CheckCircle2, Loader2, AlertCircle, Check, X } from "lucide-react"
 import { cn } from "@/lib/utils"
+
+// Email validation regex for client-side
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
+// Country codes with flags for phone number dropdown
+const countryCodes = [
+  { code: "+232", country: "Sierra Leone", flag: "🇸🇱" },
+  { code: "+234", country: "Nigeria", flag: "🇳🇬" },
+  { code: "+233", country: "Ghana", flag: "🇬🇭" },
+  { code: "+254", country: "Kenya", flag: "🇰🇪" },
+  { code: "+27", country: "South Africa", flag: "🇿🇦" },
+  { code: "+20", country: "Egypt", flag: "🇪🇬" },
+  { code: "+212", country: "Morocco", flag: "🇲🇦" },
+  { code: "+256", country: "Uganda", flag: "🇺🇬" },
+  { code: "+255", country: "Tanzania", flag: "🇹🇿" },
+  { code: "+237", country: "Cameroon", flag: "🇨🇲" },
+  { code: "+225", country: "Ivory Coast", flag: "🇨🇮" },
+  { code: "+221", country: "Senegal", flag: "🇸🇳" },
+  { code: "+251", country: "Ethiopia", flag: "🇪🇹" },
+  { code: "+263", country: "Zimbabwe", flag: "🇿🇼" },
+  { code: "+260", country: "Zambia", flag: "🇿🇲" },
+  { code: "+267", country: "Botswana", flag: "🇧🇼" },
+  { code: "+265", country: "Malawi", flag: "🇲🇼" },
+  { code: "+258", country: "Mozambique", flag: "🇲🇿" },
+  { code: "+250", country: "Rwanda", flag: "🇷🇼" },
+  { code: "+231", country: "Liberia", flag: "🇱🇷" },
+  { code: "+220", country: "Gambia", flag: "🇬🇲" },
+  { code: "+224", country: "Guinea", flag: "🇬🇳" },
+  { code: "+229", country: "Benin", flag: "🇧🇯" },
+  { code: "+228", country: "Togo", flag: "🇹🇬" },
+  { code: "+1", country: "United States", flag: "🇺🇸" },
+  { code: "+44", country: "United Kingdom", flag: "🇬🇧" },
+  { code: "+33", country: "France", flag: "🇫🇷" },
+  { code: "+49", country: "Germany", flag: "🇩🇪" },
+  { code: "+971", country: "UAE", flag: "🇦🇪" },
+  { code: "+966", country: "Saudi Arabia", flag: "🇸🇦" },
+  { code: "+91", country: "India", flag: "🇮🇳" },
+  { code: "+86", country: "China", flag: "🇨🇳" },
+]
 
 // All countries list
 const allCountries = [
@@ -43,13 +82,98 @@ interface WaitlistFormProps {
 export function WaitlistForm({ variant = "default", idPrefix = "", className }: WaitlistFormProps) {
   const [state, formAction, isPending] = useActionState<WaitlistFormState | null, FormData>(joinWaitlist, null)
   const [country, setCountry] = useState("")
+  const [email, setEmail] = useState("")
+  const [phoneCode, setPhoneCode] = useState("+232") // Default to Sierra Leone
+  const [phoneNumber, setPhoneNumber] = useState("")
+  const [customPhoneCode, setCustomPhoneCode] = useState("")
+  const [isCustomCode, setIsCustomCode] = useState(false)
+  const [emailStatus, setEmailStatus] = useState<"idle" | "checking" | "available" | "taken" | "invalid">("idle")
+  const emailCheckTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const formRef = useRef<HTMLFormElement>(null)
+
+  // Handle phone code selection
+  const handlePhoneCodeChange = (value: string) => {
+    if (value === "other") {
+      setIsCustomCode(true)
+      setPhoneCode("")
+      setCustomPhoneCode("")
+    } else {
+      setIsCustomCode(false)
+      setPhoneCode(value)
+    }
+  }
+
+  // Get the actual phone code to use
+  const getPhoneCode = () => isCustomCode ? customPhoneCode : phoneCode
+
+  // Debounced email uniqueness check
+  const checkEmail = useCallback(async (emailValue: string) => {
+    if (!emailValue || !emailRegex.test(emailValue)) {
+      setEmailStatus(emailValue ? "invalid" : "idle")
+      return
+    }
+
+    setEmailStatus("checking")
+    try {
+      const exists = await checkEmailExists(emailValue)
+      setEmailStatus(exists ? "taken" : "available")
+    } catch {
+      setEmailStatus("idle")
+    }
+  }, [])
+
+  // Handle email input change with debounce
+  const handleEmailChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const value = e.target.value
+      setEmail(value)
+
+      // Clear previous timeout
+      if (emailCheckTimeoutRef.current) {
+        clearTimeout(emailCheckTimeoutRef.current)
+      }
+
+      // Reset status for immediate feedback
+      if (!value) {
+        setEmailStatus("idle")
+        return
+      }
+
+      if (!emailRegex.test(value)) {
+        setEmailStatus("invalid")
+        return
+      }
+
+      // Debounce the server check
+      emailCheckTimeoutRef.current = setTimeout(() => {
+        checkEmail(value)
+      }, 500)
+    },
+    [checkEmail]
+  )
 
   // Reset form on success
   useEffect(() => {
     if (state?.success) {
       setCountry("")
+      setEmail("")
+      setPhoneCode("+232")
+      setPhoneNumber("")
+      setCustomPhoneCode("")
+      setIsCustomCode(false)
+      setEmailStatus("idle")
+      formRef.current?.reset()
     }
   }, [state?.success])
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (emailCheckTimeoutRef.current) {
+        clearTimeout(emailCheckTimeoutRef.current)
+      }
+    }
+  }, [])
 
   if (state?.success) {
     return (
@@ -70,7 +194,7 @@ export function WaitlistForm({ variant = "default", idPrefix = "", className }: 
   const isCompact = variant === "compact"
 
   return (
-    <form action={formAction} className={cn("space-y-4", className)}>
+    <form ref={formRef} action={formAction} className={cn("space-y-4", className)}>
       <AnimatePresence>
         {state?.message && !state.success && (
           <motion.div
@@ -104,14 +228,61 @@ export function WaitlistForm({ variant = "default", idPrefix = "", className }: 
             </div>
             <div className="space-y-2">
               <Label htmlFor={`${idPrefix}phone`}>Phone Number</Label>
-              <Input
-                id={`${idPrefix}phone`}
-                name="phone"
-                type="tel"
-                placeholder="+232 76 000 000"
-                aria-invalid={!!state?.errors?.phone}
-                className={cn(state?.errors?.phone && "border-destructive")}
-              />
+              <div className="flex gap-2">
+                {isCustomCode ? (
+                  <Input
+                    type="tel"
+                    placeholder="+XX"
+                    value={customPhoneCode}
+                    onChange={(e) => setCustomPhoneCode(e.target.value)}
+                    className="w-[90px] shrink-0"
+                  />
+                ) : (
+                  <Select value={phoneCode} onValueChange={handlePhoneCodeChange}>
+                    <SelectTrigger className="w-[110px] shrink-0">
+                      <SelectValue>
+                        {countryCodes.find(c => c.code === phoneCode)?.flag} {phoneCode}
+                      </SelectValue>
+                    </SelectTrigger>
+                    <SelectContent>
+                      {countryCodes.map((c) => (
+                        <SelectItem key={c.code} value={c.code}>
+                          <span className="flex items-center gap-2">
+                            <span>{c.flag}</span>
+                            <span>{c.code}</span>
+                            <span className="text-muted-foreground text-xs">{c.country}</span>
+                          </span>
+                        </SelectItem>
+                      ))}
+                      <SelectItem value="other">
+                        <span className="flex items-center gap-2 text-muted-foreground">
+                          Other (enter code)
+                        </span>
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                )}
+                <Input
+                  id={`${idPrefix}phone`}
+                  name="phone"
+                  type="tel"
+                  placeholder="76 000 000"
+                  value={phoneNumber}
+                  onChange={(e) => setPhoneNumber(e.target.value)}
+                  aria-invalid={!!state?.errors?.phone}
+                  className={cn("flex-1", state?.errors?.phone && "border-destructive")}
+                />
+                <input type="hidden" name="phone_full" value={phoneNumber ? `${getPhoneCode()} ${phoneNumber}` : ""} />
+              </div>
+              {isCustomCode && (
+                <button 
+                  type="button" 
+                  onClick={() => { setIsCustomCode(false); setPhoneCode("+232"); }}
+                  className="text-xs text-primary hover:underline"
+                >
+                  Back to country list
+                </button>
+              )}
               {state?.errors?.phone && (
                 <p className="text-xs text-destructive">{state.errors.phone[0]}</p>
               )}
@@ -121,15 +292,40 @@ export function WaitlistForm({ variant = "default", idPrefix = "", className }: 
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-2">
               <Label htmlFor={`${idPrefix}email`}>Email Address</Label>
-              <Input
-                id={`${idPrefix}email`}
-                name="email"
-                type="email"
-                placeholder="you@example.com"
-                required
-                aria-invalid={!!state?.errors?.email}
-                className={cn(state?.errors?.email && "border-destructive")}
-              />
+              <div className="relative">
+                <Input
+                  id={`${idPrefix}email`}
+                  name="email"
+                  type="email"
+                  placeholder="you@example.com"
+                  required
+                  value={email}
+                  onChange={handleEmailChange}
+                  aria-invalid={!!state?.errors?.email || emailStatus === "taken" || emailStatus === "invalid"}
+                  className={cn(
+                    "pr-10",
+                    (state?.errors?.email || emailStatus === "taken") && "border-destructive",
+                    emailStatus === "available" && "border-[#00A86B]"
+                  )}
+                />
+                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+                  {emailStatus === "checking" && (
+                    <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+                  )}
+                  {emailStatus === "available" && (
+                    <Check className="h-4 w-4 text-[#00A86B]" />
+                  )}
+                  {(emailStatus === "taken" || emailStatus === "invalid") && (
+                    <X className="h-4 w-4 text-destructive" />
+                  )}
+                </div>
+              </div>
+              {emailStatus === "taken" && !state?.errors?.email && (
+                <p className="text-xs text-destructive">This email is already registered</p>
+              )}
+              {emailStatus === "invalid" && email && !state?.errors?.email && (
+                <p className="text-xs text-destructive">Please enter a valid email address</p>
+              )}
               {state?.errors?.email && (
                 <p className="text-xs text-destructive">{state.errors.email[0]}</p>
               )}
@@ -176,14 +372,61 @@ export function WaitlistForm({ variant = "default", idPrefix = "", className }: 
 
           <div className="space-y-2">
             <Label htmlFor={`${idPrefix}phone`}>Phone Number</Label>
-            <Input
-              id={`${idPrefix}phone`}
-              name="phone"
-              type="tel"
-              placeholder="+232 76 000 000"
-              aria-invalid={!!state?.errors?.phone}
-              className={cn(state?.errors?.phone && "border-destructive")}
-            />
+            <div className="flex gap-2">
+              {isCustomCode ? (
+                <Input
+                  type="tel"
+                  placeholder="+XX"
+                  value={customPhoneCode}
+                  onChange={(e) => setCustomPhoneCode(e.target.value)}
+                  className="w-[90px] shrink-0"
+                />
+              ) : (
+                <Select value={phoneCode} onValueChange={handlePhoneCodeChange}>
+                  <SelectTrigger className="w-[110px] shrink-0">
+                    <SelectValue>
+                      {countryCodes.find(c => c.code === phoneCode)?.flag} {phoneCode}
+                    </SelectValue>
+                  </SelectTrigger>
+                  <SelectContent>
+                    {countryCodes.map((c) => (
+                      <SelectItem key={c.code} value={c.code}>
+                        <span className="flex items-center gap-2">
+                          <span>{c.flag}</span>
+                          <span>{c.code}</span>
+                          <span className="text-muted-foreground text-xs">{c.country}</span>
+                        </span>
+                      </SelectItem>
+                    ))}
+                    <SelectItem value="other">
+                      <span className="flex items-center gap-2 text-muted-foreground">
+                        Other (enter code)
+                      </span>
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+              )}
+              <Input
+                id={`${idPrefix}phone`}
+                name="phone"
+                type="tel"
+                placeholder="76 000 000"
+                value={phoneNumber}
+                onChange={(e) => setPhoneNumber(e.target.value)}
+                aria-invalid={!!state?.errors?.phone}
+                className={cn("flex-1", state?.errors?.phone && "border-destructive")}
+              />
+              <input type="hidden" name="phone_full" value={phoneNumber ? `${getPhoneCode()} ${phoneNumber}` : ""} />
+            </div>
+            {isCustomCode && (
+              <button 
+                type="button" 
+                onClick={() => { setIsCustomCode(false); setPhoneCode("+232"); }}
+                className="text-xs text-primary hover:underline"
+              >
+                Back to country list
+              </button>
+            )}
             {state?.errors?.phone && (
               <p className="text-xs text-destructive">{state.errors.phone[0]}</p>
             )}
@@ -191,15 +434,40 @@ export function WaitlistForm({ variant = "default", idPrefix = "", className }: 
 
           <div className="space-y-2">
             <Label htmlFor={`${idPrefix}email`}>Email Address</Label>
-            <Input
-              id={`${idPrefix}email`}
-              name="email"
-              type="email"
-              placeholder="you@example.com"
-              required
-              aria-invalid={!!state?.errors?.email}
-              className={cn(state?.errors?.email && "border-destructive")}
-            />
+            <div className="relative">
+              <Input
+                id={`${idPrefix}email`}
+                name="email"
+                type="email"
+                placeholder="you@example.com"
+                required
+                value={email}
+                onChange={handleEmailChange}
+                aria-invalid={!!state?.errors?.email || emailStatus === "taken" || emailStatus === "invalid"}
+                className={cn(
+                  "pr-10",
+                  (state?.errors?.email || emailStatus === "taken") && "border-destructive",
+                  emailStatus === "available" && "border-[#00A86B]"
+                )}
+              />
+              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+                {emailStatus === "checking" && (
+                  <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+                )}
+                {emailStatus === "available" && (
+                  <Check className="h-4 w-4 text-[#00A86B]" />
+                )}
+                {(emailStatus === "taken" || emailStatus === "invalid") && (
+                  <X className="h-4 w-4 text-destructive" />
+                )}
+              </div>
+            </div>
+            {emailStatus === "taken" && !state?.errors?.email && (
+              <p className="text-xs text-destructive">This email is already registered</p>
+            )}
+            {emailStatus === "invalid" && email && !state?.errors?.email && (
+              <p className="text-xs text-destructive">Please enter a valid email address</p>
+            )}
             {state?.errors?.email && (
               <p className="text-xs text-destructive">{state.errors.email[0]}</p>
             )}
@@ -233,7 +501,7 @@ export function WaitlistForm({ variant = "default", idPrefix = "", className }: 
         type="submit" 
         className="w-full bg-[#00A86B] hover:bg-[#00A86B]/90" 
         size="lg"
-        disabled={isPending}
+        disabled={isPending || emailStatus === "taken" || emailStatus === "checking"}
       >
         {isPending ? (
           <>

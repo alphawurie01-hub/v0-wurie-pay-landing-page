@@ -125,6 +125,14 @@ const Header = () => {
     return () => window.removeEventListener("scroll", handleScroll)
   }, [])
 
+  const scrollToWaitlist = () => {
+    const waitlistSection = document.getElementById("waitlist-form")
+    if (waitlistSection) {
+      waitlistSection.scrollIntoView({ behavior: "smooth", block: "center" })
+    }
+    setIsOpen(false)
+  }
+
   return (
     <header className={cn(
       "fixed top-0 z-50 w-full transition-all duration-300",
@@ -141,11 +149,14 @@ const Header = () => {
             <a href="#team" className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">Team</a>
           </div>
 
-          <Button className="hidden md:inline-flex bg-[#00A86B] hover:bg-[#00A86B]/90">
+          <Button 
+            onClick={scrollToWaitlist}
+            className="hidden md:inline-flex bg-[#00A86B] hover:bg-[#00A86B]/90"
+          >
             Join Waitlist
           </Button>
 
-          <button onClick={() => setIsOpen(!isOpen)} className="md:hidden">
+          <button onClick={() => setIsOpen(!isOpen)} className="md:hidden" aria-label="Toggle menu">
             {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
           </button>
         </div>
@@ -163,7 +174,12 @@ const Header = () => {
                 <a href="#solution" className="block text-sm font-medium">Solution</a>
                 <a href="#security" className="block text-sm font-medium">Security</a>
                 <a href="#team" className="block text-sm font-medium">Team</a>
-                <Button className="w-full bg-[#00A86B] hover:bg-[#00A86B]/90">Join Waitlist</Button>
+                <Button 
+                  onClick={scrollToWaitlist}
+                  className="w-full bg-[#00A86B] hover:bg-[#00A86B]/90"
+                >
+                  Join Waitlist
+                </Button>
               </div>
             </motion.div>
           )}
@@ -226,6 +242,7 @@ const HeroSection = () => {
 
           {/* Right - Waitlist Form */}
           <motion.div
+            id="waitlist-form"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
@@ -546,12 +563,14 @@ const TeamSection = () => {
       role: "Co-Founder & Chief Executive Officer",
       bio: "Entrepreneur and technology innovator dedicated to building scalable financial infrastructure for Africa. As CEO of WuriePay and leader within WurieGroup, he focuses on developing platforms that combine payments, artificial intelligence, and next-generation financial technology to enable greater financial inclusion and economic opportunity across the continent.",
       image: "/images/alhaji.png",
+      linkedin: "https://sl.linkedin.com/in/alhaji-wurie-jalloh-65721526b",
     },
     {
       name: "Hassan Wurie Jalloh",
       role: "Co-Founder",
       bio: "Data Scientist and AI Engineer passionate about building intelligent systems that solve real-world problems. As Co-Founder of WuriePay and WurieAI, he brings expertise in machine learning, data science, and artificial intelligence to develop scalable technologies that advance financial innovation and inclusion across Africa.",
       image: "/images/hassan.png",
+      linkedin: "https://www.linkedin.com/in/hassana-diallo-1489a8236",
     },
   ]
 
@@ -589,6 +608,17 @@ const TeamSection = () => {
                     <div className="mt-4 sm:ml-6 sm:mt-0">
                       <h3 className="text-xl font-bold">{member.name}</h3>
                       <p className="mt-1 text-sm font-medium text-[#00A86B]">{member.role}</p>
+                      <a 
+                        href={member.linkedin} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="mt-2 inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-[#0A66C2] transition-colors"
+                      >
+                        <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
+                          <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                        </svg>
+                        LinkedIn
+                      </a>
                     </div>
                   </div>
                   <p className="mt-4 text-sm leading-relaxed text-muted-foreground">{member.bio}</p>
@@ -753,94 +783,6 @@ const ReferralSection = () => {
   )
 }
 
-// Final CTA Section
-const FinalCTASection = () => {
-  const [formData, setFormData] = useState({ name: "", phone: "", email: "", country: "" })
-
-  return (
-    <section className="bg-[#00A86B] py-16 md:py-24">
-      <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
-        <div className="text-center text-white">
-          <h2 className="text-3xl font-bold sm:text-4xl lg:text-5xl">
-            Be among the first to access WuriePay
-          </h2>
-          <p className="mx-auto mt-4 max-w-2xl text-lg text-white/90">
-            Join the early access list and receive updates about the upcoming launch.
-          </p>
-        </div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="mt-12"
-        >
-          <Card>
-            <CardContent className="p-6">
-              <form className="space-y-4">
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <div className="space-y-2">
-                    <Label htmlFor="final-name">Full Name</Label>
-                    <Input
-                      id="final-name"
-                      placeholder="Alpha Bah"
-                      value={formData.name}
-                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="final-phone">Phone Number</Label>
-                    <Input
-                      id="final-phone"
-                      type="tel"
-                      placeholder="+232 76 000 000"
-                      value={formData.phone}
-                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                    />
-                  </div>
-                </div>
-
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <div className="space-y-2">
-                    <Label htmlFor="final-email">Email Address</Label>
-                    <Input
-                      id="final-email"
-                      type="email"
-                      placeholder="you@example.com"
-                      value={formData.email}
-                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="final-country">Country</Label>
-                    <Select value={formData.country} onValueChange={(value) => setFormData({ ...formData, country: value })}>
-                      <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Select your country" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {allCountries.map((country) => (
-                          <SelectItem key={country} value={country.toLowerCase().replace(/\s+/g, '-')}>
-                            {country}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-
-                <Button type="submit" className="w-full bg-[#00A86B] hover:bg-[#00A86B]/90" size="lg">
-                  Join the Waitlist
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
-              </form>
-            </CardContent>
-          </Card>
-        </motion.div>
-      </div>
-    </section>
-  )
-}
-
 // Footer
 const Footer = () => {
   return (
@@ -854,17 +796,33 @@ const Footer = () => {
               Building the future of finance in Africa
             </p>
             <div className="mt-4 flex gap-4">
-              <a href="#" className="text-muted-foreground hover:text-foreground">
-                <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
-                </svg>
-              </a>
-              <a href="#" className="text-muted-foreground hover:text-foreground">
+              <a 
+                href="https://www.linkedin.com/company/wuriegroup/" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-muted-foreground hover:text-[#0A66C2] transition-colors"
+                aria-label="LinkedIn"
+              >
                 <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
                 </svg>
               </a>
-              <a href="mailto:hello@wuriepay.com" className="text-muted-foreground hover:text-foreground">
+              <a 
+                href="https://www.facebook.com/share/1UK6epA3tv/?mibextid=wwXIfr" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-muted-foreground hover:text-[#1877F2] transition-colors"
+                aria-label="Facebook"
+              >
+                <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                </svg>
+              </a>
+              <a 
+                href="mailto:info@wuriepay.com" 
+                className="text-muted-foreground hover:text-foreground transition-colors"
+                aria-label="Email"
+              >
                 <Mail className="h-5 w-5" />
               </a>
             </div>
@@ -913,7 +871,7 @@ export default function WuriePayLanding() {
         <SecuritySection />
         <TeamSection />
         <ReferralSection />
-        <FinalCTASection />
+  
       </main>
       <Footer />
     </div>
