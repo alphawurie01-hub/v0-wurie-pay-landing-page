@@ -85,9 +85,26 @@ export function WaitlistForm({ variant = "default", idPrefix = "", className }: 
   const [email, setEmail] = useState("")
   const [phoneCode, setPhoneCode] = useState("+232") // Default to Sierra Leone
   const [phoneNumber, setPhoneNumber] = useState("")
+  const [customPhoneCode, setCustomPhoneCode] = useState("")
+  const [isCustomCode, setIsCustomCode] = useState(false)
   const [emailStatus, setEmailStatus] = useState<"idle" | "checking" | "available" | "taken" | "invalid">("idle")
   const emailCheckTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const formRef = useRef<HTMLFormElement>(null)
+
+  // Handle phone code selection
+  const handlePhoneCodeChange = (value: string) => {
+    if (value === "other") {
+      setIsCustomCode(true)
+      setPhoneCode("")
+      setCustomPhoneCode("")
+    } else {
+      setIsCustomCode(false)
+      setPhoneCode(value)
+    }
+  }
+
+  // Get the actual phone code to use
+  const getPhoneCode = () => isCustomCode ? customPhoneCode : phoneCode
 
   // Debounced email uniqueness check
   const checkEmail = useCallback(async (emailValue: string) => {
@@ -142,6 +159,8 @@ export function WaitlistForm({ variant = "default", idPrefix = "", className }: 
       setEmail("")
       setPhoneCode("+232")
       setPhoneNumber("")
+      setCustomPhoneCode("")
+      setIsCustomCode(false)
       setEmailStatus("idle")
       formRef.current?.reset()
     }
@@ -210,24 +229,39 @@ export function WaitlistForm({ variant = "default", idPrefix = "", className }: 
             <div className="space-y-2">
               <Label htmlFor={`${idPrefix}phone`}>Phone Number</Label>
               <div className="flex gap-2">
-                <Select value={phoneCode} onValueChange={setPhoneCode}>
-                  <SelectTrigger className="w-[110px] shrink-0">
-                    <SelectValue>
-                      {countryCodes.find(c => c.code === phoneCode)?.flag} {phoneCode}
-                    </SelectValue>
-                  </SelectTrigger>
-                  <SelectContent>
-                    {countryCodes.map((c) => (
-                      <SelectItem key={c.code} value={c.code}>
-                        <span className="flex items-center gap-2">
-                          <span>{c.flag}</span>
-                          <span>{c.code}</span>
-                          <span className="text-muted-foreground text-xs">{c.country}</span>
+                {isCustomCode ? (
+                  <Input
+                    type="tel"
+                    placeholder="+XX"
+                    value={customPhoneCode}
+                    onChange={(e) => setCustomPhoneCode(e.target.value)}
+                    className="w-[90px] shrink-0"
+                  />
+                ) : (
+                  <Select value={phoneCode} onValueChange={handlePhoneCodeChange}>
+                    <SelectTrigger className="w-[110px] shrink-0">
+                      <SelectValue>
+                        {countryCodes.find(c => c.code === phoneCode)?.flag} {phoneCode}
+                      </SelectValue>
+                    </SelectTrigger>
+                    <SelectContent>
+                      {countryCodes.map((c) => (
+                        <SelectItem key={c.code} value={c.code}>
+                          <span className="flex items-center gap-2">
+                            <span>{c.flag}</span>
+                            <span>{c.code}</span>
+                            <span className="text-muted-foreground text-xs">{c.country}</span>
+                          </span>
+                        </SelectItem>
+                      ))}
+                      <SelectItem value="other">
+                        <span className="flex items-center gap-2 text-muted-foreground">
+                          Other (enter code)
                         </span>
                       </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                    </SelectContent>
+                  </Select>
+                )}
                 <Input
                   id={`${idPrefix}phone`}
                   name="phone"
@@ -238,8 +272,17 @@ export function WaitlistForm({ variant = "default", idPrefix = "", className }: 
                   aria-invalid={!!state?.errors?.phone}
                   className={cn("flex-1", state?.errors?.phone && "border-destructive")}
                 />
-                <input type="hidden" name="phone_full" value={phoneNumber ? `${phoneCode} ${phoneNumber}` : ""} />
+                <input type="hidden" name="phone_full" value={phoneNumber ? `${getPhoneCode()} ${phoneNumber}` : ""} />
               </div>
+              {isCustomCode && (
+                <button 
+                  type="button" 
+                  onClick={() => { setIsCustomCode(false); setPhoneCode("+232"); }}
+                  className="text-xs text-primary hover:underline"
+                >
+                  Back to country list
+                </button>
+              )}
               {state?.errors?.phone && (
                 <p className="text-xs text-destructive">{state.errors.phone[0]}</p>
               )}
@@ -330,24 +373,39 @@ export function WaitlistForm({ variant = "default", idPrefix = "", className }: 
           <div className="space-y-2">
             <Label htmlFor={`${idPrefix}phone`}>Phone Number</Label>
             <div className="flex gap-2">
-              <Select value={phoneCode} onValueChange={setPhoneCode}>
-                <SelectTrigger className="w-[110px] shrink-0">
-                  <SelectValue>
-                    {countryCodes.find(c => c.code === phoneCode)?.flag} {phoneCode}
-                  </SelectValue>
-                </SelectTrigger>
-                <SelectContent>
-                  {countryCodes.map((c) => (
-                    <SelectItem key={c.code} value={c.code}>
-                      <span className="flex items-center gap-2">
-                        <span>{c.flag}</span>
-                        <span>{c.code}</span>
-                        <span className="text-muted-foreground text-xs">{c.country}</span>
+              {isCustomCode ? (
+                <Input
+                  type="tel"
+                  placeholder="+XX"
+                  value={customPhoneCode}
+                  onChange={(e) => setCustomPhoneCode(e.target.value)}
+                  className="w-[90px] shrink-0"
+                />
+              ) : (
+                <Select value={phoneCode} onValueChange={handlePhoneCodeChange}>
+                  <SelectTrigger className="w-[110px] shrink-0">
+                    <SelectValue>
+                      {countryCodes.find(c => c.code === phoneCode)?.flag} {phoneCode}
+                    </SelectValue>
+                  </SelectTrigger>
+                  <SelectContent>
+                    {countryCodes.map((c) => (
+                      <SelectItem key={c.code} value={c.code}>
+                        <span className="flex items-center gap-2">
+                          <span>{c.flag}</span>
+                          <span>{c.code}</span>
+                          <span className="text-muted-foreground text-xs">{c.country}</span>
+                        </span>
+                      </SelectItem>
+                    ))}
+                    <SelectItem value="other">
+                      <span className="flex items-center gap-2 text-muted-foreground">
+                        Other (enter code)
                       </span>
                     </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+                  </SelectContent>
+                </Select>
+              )}
               <Input
                 id={`${idPrefix}phone`}
                 name="phone"
@@ -358,8 +416,17 @@ export function WaitlistForm({ variant = "default", idPrefix = "", className }: 
                 aria-invalid={!!state?.errors?.phone}
                 className={cn("flex-1", state?.errors?.phone && "border-destructive")}
               />
-              <input type="hidden" name="phone_full" value={phoneNumber ? `${phoneCode} ${phoneNumber}` : ""} />
+              <input type="hidden" name="phone_full" value={phoneNumber ? `${getPhoneCode()} ${phoneNumber}` : ""} />
             </div>
+            {isCustomCode && (
+              <button 
+                type="button" 
+                onClick={() => { setIsCustomCode(false); setPhoneCode("+232"); }}
+                className="text-xs text-primary hover:underline"
+              >
+                Back to country list
+              </button>
+            )}
             {state?.errors?.phone && (
               <p className="text-xs text-destructive">{state.errors.phone[0]}</p>
             )}

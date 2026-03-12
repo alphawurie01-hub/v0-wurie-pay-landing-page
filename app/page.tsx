@@ -152,7 +152,6 @@ const Header = () => {
           <Button 
             onClick={scrollToWaitlist}
             className="hidden md:inline-flex bg-[#00A86B] hover:bg-[#00A86B]/90"
-            title="Be among the first to access WuriePay. Join the early access list and receive updates about the upcoming launch."
           >
             Join Waitlist
           </Button>
@@ -771,94 +770,6 @@ const ReferralSection = () => {
   )
 }
 
-// Final CTA Section
-const FinalCTASection = () => {
-  const [formData, setFormData] = useState({ name: "", phone: "", email: "", country: "" })
-
-  return (
-    <section className="bg-[#00A86B] py-16 md:py-24">
-      <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
-        <div className="text-center text-white">
-          <h2 className="text-3xl font-bold sm:text-4xl lg:text-5xl">
-            Be among the first to access WuriePay
-          </h2>
-          <p className="mx-auto mt-4 max-w-2xl text-lg text-white/90">
-            Join the early access list and receive updates about the upcoming launch.
-          </p>
-        </div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="mt-12"
-        >
-          <Card>
-            <CardContent className="p-6">
-              <form className="space-y-4">
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <div className="space-y-2">
-                    <Label htmlFor="final-name">Full Name</Label>
-                    <Input
-                      id="final-name"
-                      placeholder="Alpha Bah"
-                      value={formData.name}
-                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="final-phone">Phone Number</Label>
-                    <Input
-                      id="final-phone"
-                      type="tel"
-                      placeholder="+232 76 000 000"
-                      value={formData.phone}
-                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                    />
-                  </div>
-                </div>
-
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <div className="space-y-2">
-                    <Label htmlFor="final-email">Email Address</Label>
-                    <Input
-                      id="final-email"
-                      type="email"
-                      placeholder="you@example.com"
-                      value={formData.email}
-                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="final-country">Country</Label>
-                    <Select value={formData.country} onValueChange={(value) => setFormData({ ...formData, country: value })}>
-                      <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Select your country" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {allCountries.map((country) => (
-                          <SelectItem key={country} value={country.toLowerCase().replace(/\s+/g, '-')}>
-                            {country}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-
-                <Button type="submit" className="w-full bg-[#00A86B] hover:bg-[#00A86B]/90" size="lg">
-                  Join the Waitlist
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
-              </form>
-            </CardContent>
-          </Card>
-        </motion.div>
-      </div>
-    </section>
-  )
-}
-
 // Footer
 const Footer = () => {
   return (
@@ -931,7 +842,7 @@ export default function WuriePayLanding() {
         <SecuritySection />
         <TeamSection />
         <ReferralSection />
-        <FinalCTASection />
+  
       </main>
       <Footer />
     </div>
