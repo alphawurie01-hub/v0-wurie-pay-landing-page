@@ -1,14 +1,17 @@
 "use client"
 
-import { useActionState, useEffect, useState } from "react"
+import { useActionState, useEffect, useState, useCallback, useRef } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { joinWaitlist, type WaitlistFormState } from "@/app/actions/waitlist"
-import { ArrowRight, CheckCircle2, Loader2, AlertCircle } from "lucide-react"
+import { joinWaitlist, checkEmailExists, type WaitlistFormState } from "@/app/actions/waitlist"
+import { ArrowRight, CheckCircle2, Loader2, AlertCircle, Check, X } from "lucide-react"
 import { cn } from "@/lib/utils"
+
+// Email validation regex for client-side
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
 // All countries list
 const allCountries = [
@@ -43,13 +46,75 @@ interface WaitlistFormProps {
 export function WaitlistForm({ variant = "default", idPrefix = "", className }: WaitlistFormProps) {
   const [state, formAction, isPending] = useActionState<WaitlistFormState | null, FormData>(joinWaitlist, null)
   const [country, setCountry] = useState("")
+  const [email, setEmail] = useState("")
+  const [emailStatus, setEmailStatus] = useState<"idle" | "checking" | "available" | "taken" | "invalid">("idle")
+  const emailCheckTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const formRef = useRef<HTMLFormElement>(null)
+
+  // Debounced email uniqueness check
+  const checkEmail = useCallback(async (emailValue: string) => {
+    if (!emailValue || !emailRegex.test(emailValue)) {
+      setEmailStatus(emailValue ? "invalid" : "idle")
+      return
+    }
+
+    setEmailStatus("checking")
+    try {
+      const exists = await checkEmailExists(emailValue)
+      setEmailStatus(exists ? "taken" : "available")
+    } catch {
+      setEmailStatus("idle")
+    }
+  }, [])
+
+  // Handle email input change with debounce
+  const handleEmailChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const value = e.target.value
+      setEmail(value)
+
+      // Clear previous timeout
+      if (emailCheckTimeoutRef.current) {
+        clearTimeout(emailCheckTimeoutRef.current)
+      }
+
+      // Reset status for immediate feedback
+      if (!value) {
+        setEmailStatus("idle")
+        return
+      }
+
+      if (!emailRegex.test(value)) {
+        setEmailStatus("invalid")
+        return
+      }
+
+      // Debounce the server check
+      emailCheckTimeoutRef.current = setTimeout(() => {
+        checkEmail(value)
+      }, 500)
+    },
+    [checkEmail]
+  )
 
   // Reset form on success
   useEffect(() => {
     if (state?.success) {
       setCountry("")
+      setEmail("")
+      setEmailStatus("idle")
+      formRef.current?.reset()
     }
   }, [state?.success])
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (emailCheckTimeoutRef.current) {
+        clearTimeout(emailCheckTimeoutRef.current)
+      }
+    }
+  }, [])
 
   if (state?.success) {
     return (
@@ -70,7 +135,7 @@ export function WaitlistForm({ variant = "default", idPrefix = "", className }: 
   const isCompact = variant === "compact"
 
   return (
-    <form action={formAction} className={cn("space-y-4", className)}>
+    <form ref={formRef} action={formAction} className={cn("space-y-4", className)}>
       <AnimatePresence>
         {state?.message && !state.success && (
           <motion.div
@@ -121,15 +186,40 @@ export function WaitlistForm({ variant = "default", idPrefix = "", className }: 
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-2">
               <Label htmlFor={`${idPrefix}email`}>Email Address</Label>
-              <Input
-                id={`${idPrefix}email`}
-                name="email"
-                type="email"
-                placeholder="you@example.com"
-                required
-                aria-invalid={!!state?.errors?.email}
-                className={cn(state?.errors?.email && "border-destructive")}
-              />
+              <div className="relative">
+                <Input
+                  id={`${idPrefix}email`}
+                  name="email"
+                  type="email"
+                  placeholder="you@example.com"
+                  required
+                  value={email}
+                  onChange={handleEmailChange}
+                  aria-invalid={!!state?.errors?.email || emailStatus === "taken" || emailStatus === "invalid"}
+                  className={cn(
+                    "pr-10",
+                    (state?.errors?.email || emailStatus === "taken") && "border-destructive",
+                    emailStatus === "available" && "border-[#00A86B]"
+                  )}
+                />
+                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+                  {emailStatus === "checking" && (
+                    <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+                  )}
+                  {emailStatus === "available" && (
+                    <Check className="h-4 w-4 text-[#00A86B]" />
+                  )}
+                  {(emailStatus === "taken" || emailStatus === "invalid") && (
+                    <X className="h-4 w-4 text-destructive" />
+                  )}
+                </div>
+              </div>
+              {emailStatus === "taken" && !state?.errors?.email && (
+                <p className="text-xs text-destructive">This email is already registered</p>
+              )}
+              {emailStatus === "invalid" && email && !state?.errors?.email && (
+                <p className="text-xs text-destructive">Please enter a valid email address</p>
+              )}
               {state?.errors?.email && (
                 <p className="text-xs text-destructive">{state.errors.email[0]}</p>
               )}
@@ -191,15 +281,40 @@ export function WaitlistForm({ variant = "default", idPrefix = "", className }: 
 
           <div className="space-y-2">
             <Label htmlFor={`${idPrefix}email`}>Email Address</Label>
-            <Input
-              id={`${idPrefix}email`}
-              name="email"
-              type="email"
-              placeholder="you@example.com"
-              required
-              aria-invalid={!!state?.errors?.email}
-              className={cn(state?.errors?.email && "border-destructive")}
-            />
+            <div className="relative">
+              <Input
+                id={`${idPrefix}email`}
+                name="email"
+                type="email"
+                placeholder="you@example.com"
+                required
+                value={email}
+                onChange={handleEmailChange}
+                aria-invalid={!!state?.errors?.email || emailStatus === "taken" || emailStatus === "invalid"}
+                className={cn(
+                  "pr-10",
+                  (state?.errors?.email || emailStatus === "taken") && "border-destructive",
+                  emailStatus === "available" && "border-[#00A86B]"
+                )}
+              />
+              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+                {emailStatus === "checking" && (
+                  <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+                )}
+                {emailStatus === "available" && (
+                  <Check className="h-4 w-4 text-[#00A86B]" />
+                )}
+                {(emailStatus === "taken" || emailStatus === "invalid") && (
+                  <X className="h-4 w-4 text-destructive" />
+                )}
+              </div>
+            </div>
+            {emailStatus === "taken" && !state?.errors?.email && (
+              <p className="text-xs text-destructive">This email is already registered</p>
+            )}
+            {emailStatus === "invalid" && email && !state?.errors?.email && (
+              <p className="text-xs text-destructive">Please enter a valid email address</p>
+            )}
             {state?.errors?.email && (
               <p className="text-xs text-destructive">{state.errors.email[0]}</p>
             )}
@@ -233,7 +348,7 @@ export function WaitlistForm({ variant = "default", idPrefix = "", className }: 
         type="submit" 
         className="w-full bg-[#00A86B] hover:bg-[#00A86B]/90" 
         size="lg"
-        disabled={isPending}
+        disabled={isPending || emailStatus === "taken" || emailStatus === "checking"}
       >
         {isPending ? (
           <>
