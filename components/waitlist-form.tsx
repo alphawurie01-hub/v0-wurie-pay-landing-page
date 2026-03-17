@@ -155,6 +155,15 @@ export function WaitlistForm({ variant = "default", idPrefix = "", className }: 
   // Reset form on success
   useEffect(() => {
     if (state?.success) {
+      if (typeof state.waitlistCount === "number") {
+        window.dispatchEvent(
+          new CustomEvent("wuriepay:waitlist-count", { detail: { count: state.waitlistCount } })
+        )
+      } else {
+        window.dispatchEvent(
+          new CustomEvent("wuriepay:waitlist-count", { detail: { increment: 1 } })
+        )
+      }
       setCountry("")
       setEmail("")
       setPhoneCode("+232")

@@ -37,6 +37,7 @@ const waitlistSchema = z.object({
 export type WaitlistFormState = {
   success: boolean
   message: string
+  waitlistCount?: number
   errors?: {
     name?: string[]
     email?: string[]
@@ -184,9 +185,11 @@ export async function joinWaitlist(
       }
     }
 
+    const waitlistCount = await getWaitlistCount()
     return {
       success: true,
       message: "You're on the list! We'll notify you when WuriePay launches in your region.",
+      waitlistCount,
     }
   } catch (error) {
     console.error("Waitlist submission error:", error)
@@ -194,6 +197,25 @@ export async function joinWaitlist(
       success: false,
       message: "An unexpected error occurred. Please try again later.",
     }
+  }
+}
+
+export async function getWaitlistCount(): Promise<number> {
+  try {
+    const supabase = await createClient()
+    const { count, error } = await supabase
+      .from("waitlist")
+      .select("id", { count: "exact", head: true })
+
+    if (error) {
+      console.error("Error fetching waitlist count:", error)
+      return 0
+    }
+
+    return count ?? 0
+  } catch (error) {
+    console.error("Waitlist count error:", error)
+    return 0
   }
 }
 

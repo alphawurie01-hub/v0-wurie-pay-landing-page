@@ -32,7 +32,7 @@ export function Footer() {
               </span>
             </div>
             <p className="text-background/60 mb-6 max-w-md">
-              The future of finance in Africa. Send money, pay bills, and manage your finances with AI — all in one secure platform.
+              The future of finance in Africa. Send money, pay bills, and manage your finances with AI, all in one secure platform.
             </p>
             <p className="text-sm text-background/40">
               A product of <span className="text-primary font-medium">WurieGroup</span>

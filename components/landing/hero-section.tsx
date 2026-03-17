@@ -55,7 +55,7 @@ export function HeroSection() {
             </h1>
             
             <p className="text-lg sm:text-xl text-muted-foreground max-w-xl leading-relaxed">
-              Send money, pay bills, and manage your finances with AI — all inside one secure financial platform designed for Africa.
+              Send money, pay bills, and manage your finances with AI, all inside one secure financial platform designed for Africa.
             </p>
 
             {/* Mobile app mockup for mobile view */}
