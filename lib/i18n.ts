@@ -45,6 +45,7 @@ const copy = {
       submit: "Join the Waitlist",
       joining: "Joining...",
       youreOnTheList: "You're on the list!",
+      successMessage: "We'll notify you when WuriePay launches in your region.",
     },
     problem: {
       heading: "Financial tools in Africa are outdated",
@@ -187,6 +188,7 @@ const copy = {
       submit: "Rejoindre la liste d'attente",
       joining: "Adhésion...",
       youreOnTheList: "Vous êtes sur la liste !",
+      successMessage: "Nous vous notifierons quand WuriePay sera lancé dans votre région.",
     },    problem: {
       heading: "Les outils financiers en Afrique sont dépassés",
       sub: "Des infrastructures héritées comme SWIFT n’ont pas été conçues pour les économies numériques modernes. Il est temps de changer.",

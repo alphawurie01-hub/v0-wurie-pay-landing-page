@@ -197,7 +197,7 @@ export function WaitlistForm({ variant = "default", idPrefix = "", className, co
           <CheckCircle2 className="h-8 w-8 text-[#00A86B]" />
         </div>
         <h3 className="mt-4 text-xl font-semibold">{copy?.form?.youreOnTheList || "You're on the list!"}</h3>
-        <p className="mt-2 text-muted-foreground">{state.message}</p>
+        <p className="mt-2 text-muted-foreground">{copy?.form?.successMessage || state.message}</p>
       </motion.div>
     )
   }
