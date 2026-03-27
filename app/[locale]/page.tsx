@@ -781,27 +781,6 @@ export default function LocalizedLandingPage() {
                 </li>
               </ul>
             </div>
-
-            <div>
-              <h3 className="font-semibold">{copy.footer.legal}</h3>
-              <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
-                <li>
-                  <a href="#" className="hover:text-foreground">
-                    {copy.footer.privacy}
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-foreground">
-                    {copy.footer.terms}
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-foreground">
-                    {copy.footer.contact}
-                  </a>
-                </li>
-              </ul>
-            </div>
           </div>
 
           <div className="mt-12 border-t pt-8 text-center text-sm text-muted-foreground">
