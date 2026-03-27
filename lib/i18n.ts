@@ -31,6 +31,21 @@ const copy = {
       heading: "Join the growing community building the future of African finance",
       sub: "people already waiting for WuriePay",
     },
+    earlyAccess: {
+      heading: "Send, save, and grow money across Africa",
+      subheading: "fast and simple.",
+      buttonText: "Get Early Access",
+    },
+    form: {
+      fullName: "Full Name",
+      phoneNumber: "Phone Number",
+      emailAddress: "Email Address",
+      country: "Country",
+      selectCountry: "Select your country",
+      submit: "Join the Waitlist",
+      joining: "Joining...",
+      youreOnTheList: "You're on the list!",
+    },
     problem: {
       heading: "Financial tools in Africa are outdated",
       sub: "Legacy infrastructure like SWIFT wasn't designed for modern digital economies. It's time for change.",
@@ -129,10 +144,6 @@ const copy = {
       companyLine: "A WurieGroup company",
       tagline: "Building the future of finance in Africa",
       product: "Product",
-      legal: "Legal",
-      privacy: "Privacy Policy",
-      terms: "Terms of Service",
-      contact: "Contact",
       rights: "WuriePay by WurieGroup. All rights reserved.",
     },
   },
@@ -162,8 +173,21 @@ const copy = {
     socialProof: {
       heading: "Rejoignez la communauté qui construit l’avenir de la finance africaine",
       sub: "personnes attendent déjà WuriePay",
+    },    earlyAccess: {
+      heading: "Envoyez, économisez et faites fructifier votre argent en Afrique",
+      subheading: "rapidement et simplement.",
+      buttonText: "Obtenir un accès anticipé",
     },
-    problem: {
+    form: {
+      fullName: "Nom complet",
+      phoneNumber: "Numéro de téléphone",
+      emailAddress: "Adresse e-mail",
+      country: "Pays",
+      selectCountry: "Sélectionnez votre pays",
+      submit: "Rejoindre la liste d'attente",
+      joining: "Adhésion...",
+      youreOnTheList: "Vous êtes sur la liste !",
+    },    problem: {
       heading: "Les outils financiers en Afrique sont dépassés",
       sub: "Des infrastructures héritées comme SWIFT n’ont pas été conçues pour les économies numériques modernes. Il est temps de changer.",
       items: [
@@ -261,10 +285,7 @@ const copy = {
       companyLine: "Une entreprise WurieGroup",
       tagline: "Construire l’avenir de la finance en Afrique",
       product: "Produit",
-      legal: "Légal",
-      privacy: "Politique de confidentialité",
-      terms: "Conditions d’utilisation",
-      contact: "Contact",
+
       rights: "WuriePay par WurieGroup. Tous droits réservés.",
     },
   },

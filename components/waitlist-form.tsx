@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { joinWaitlist, checkEmailExists, type WaitlistFormState } from "@/app/actions/waitlist"
 import { ArrowRight, CheckCircle2, Loader2, AlertCircle, Check, X } from "lucide-react"
 import { cn } from "@/lib/utils"
+import type { ReturnType as GetCopyReturnType } from "@/lib/i18n"
 
 // Email validation regex for client-side
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
@@ -77,9 +78,10 @@ interface WaitlistFormProps {
   variant?: "default" | "compact"
   idPrefix?: string
   className?: string
+  copy?: any
 }
 
-export function WaitlistForm({ variant = "default", idPrefix = "", className }: WaitlistFormProps) {
+export function WaitlistForm({ variant = "default", idPrefix = "", className, copy }: WaitlistFormProps) {
   const [state, formAction, isPending] = useActionState<WaitlistFormState | null, FormData>(joinWaitlist, null)
   const [country, setCountry] = useState("")
   const [email, setEmail] = useState("")
@@ -194,7 +196,7 @@ export function WaitlistForm({ variant = "default", idPrefix = "", className }: 
         <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[#00A86B]/10">
           <CheckCircle2 className="h-8 w-8 text-[#00A86B]" />
         </div>
-        <h3 className="mt-4 text-xl font-semibold">You&apos;re on the list!</h3>
+        <h3 className="mt-4 text-xl font-semibold">{copy?.form?.youreOnTheList || "You're on the list!"}</h3>
         <p className="mt-2 text-muted-foreground">{state.message}</p>
       </motion.div>
     )
@@ -222,7 +224,7 @@ export function WaitlistForm({ variant = "default", idPrefix = "", className }: 
         <>
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-2">
-              <Label htmlFor={`${idPrefix}name`}>Full Name</Label>
+              <Label htmlFor={`${idPrefix}name`}>{copy?.form?.fullName || "Full Name"}</Label>
               <Input
                 id={`${idPrefix}name`}
                 name="name"
@@ -236,7 +238,7 @@ export function WaitlistForm({ variant = "default", idPrefix = "", className }: 
               )}
             </div>
             <div className="space-y-2">
-              <Label htmlFor={`${idPrefix}phone`}>Phone Number</Label>
+              <Label htmlFor={`${idPrefix}phone`}>{copy?.form?.phoneNumber || "Phone Number"}</Label>
               <div className="flex gap-2">
                 {isCustomCode ? (
                   <Input
@@ -300,7 +302,7 @@ export function WaitlistForm({ variant = "default", idPrefix = "", className }: 
 
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-2">
-              <Label htmlFor={`${idPrefix}email`}>Email Address</Label>
+              <Label htmlFor={`${idPrefix}email`}>{copy?.form?.emailAddress || 'Email Address'}</Label>
               <div className="relative">
                 <Input
                   id={`${idPrefix}email`}
@@ -340,13 +342,13 @@ export function WaitlistForm({ variant = "default", idPrefix = "", className }: 
               )}
             </div>
             <div className="space-y-2">
-              <Label htmlFor={`${idPrefix}country`}>Country</Label>
+              <Label htmlFor={`${idPrefix}country`}>{copy?.form?.country || 'Country'}</Label>
               <Select name="country" value={country} onValueChange={setCountry} required>
                 <SelectTrigger 
                   className={cn("w-full", state?.errors?.country && "border-destructive")}
                   aria-invalid={!!state?.errors?.country}
                 >
-                  <SelectValue placeholder="Select your country" />
+                  <SelectValue placeholder={copy?.form?.selectCountry || 'Select your country'} />
                 </SelectTrigger>
                 <SelectContent>
                   {allCountries.map((c) => (
@@ -365,7 +367,7 @@ export function WaitlistForm({ variant = "default", idPrefix = "", className }: 
       ) : (
         <>
           <div className="space-y-2">
-            <Label htmlFor={`${idPrefix}name`}>Full Name</Label>
+            <Label htmlFor={`${idPrefix}name`}>{copy?.form?.fullName || 'Full Name'}</Label>
             <Input
               id={`${idPrefix}name`}
               name="name"
@@ -380,7 +382,7 @@ export function WaitlistForm({ variant = "default", idPrefix = "", className }: 
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor={`${idPrefix}phone`}>Phone Number</Label>
+            <Label htmlFor={`${idPrefix}phone`}>{copy?.form?.phoneNumber || 'Phone Number'}</Label>
             <div className="flex gap-2">
               {isCustomCode ? (
                 <Input
@@ -442,7 +444,7 @@ export function WaitlistForm({ variant = "default", idPrefix = "", className }: 
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor={`${idPrefix}email`}>Email Address</Label>
+            <Label htmlFor={`${idPrefix}email`}>{copy?.form?.emailAddress || 'Email Address'}</Label>
             <div className="relative">
               <Input
                 id={`${idPrefix}email`}
@@ -483,13 +485,13 @@ export function WaitlistForm({ variant = "default", idPrefix = "", className }: 
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor={`${idPrefix}country`}>Country</Label>
+            <Label htmlFor={`${idPrefix}country`}>{copy?.form?.country || 'Country'}</Label>
             <Select name="country" value={country} onValueChange={setCountry} required>
               <SelectTrigger 
                 className={cn("w-full", state?.errors?.country && "border-destructive")}
                 aria-invalid={!!state?.errors?.country}
               >
-                <SelectValue placeholder="Select your country" />
+                <SelectValue placeholder={copy?.form?.selectCountry || 'Select your country'} />
               </SelectTrigger>
               <SelectContent>
                 {allCountries.map((c) => (
@@ -515,11 +517,11 @@ export function WaitlistForm({ variant = "default", idPrefix = "", className }: 
         {isPending ? (
           <>
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            Joining...
+            {copy?.form?.joining || "Joining..."}
           </>
         ) : (
           <>
-            Join the Waitlist
+            {copy?.form?.submit || "Join the Waitlist"}
             <ArrowRight className="ml-2 h-4 w-4" />
           </>
         )}

@@ -262,7 +262,7 @@ const HeroSection = ({ copy }: { copy: ReturnType<typeof getCopy> }) => {
                 <CardDescription>{copy.hero.waitlistDesc}</CardDescription>
               </CardHeader>
               <CardContent>
-                <WaitlistForm idPrefix="hero-" />
+                <WaitlistForm idPrefix="hero-" copy={copy} />
               </CardContent>
             </Card>
           </motion.div>
@@ -697,13 +697,13 @@ export default function LocalizedLandingPage() {
         <section className="py-12 text-center border-y bg-muted/30">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <h2 className="text-2xl font-bold sm:text-3xl">
-              Send, save, and grow money across Africa
+              {copy.earlyAccess.heading}
               <br />
-              fast and simple.
+              {copy.earlyAccess.subheading}
             </h2>
             <div className="mt-8">
               <button className="px-6 py-2 bg-primary text-primary-foreground rounded-lg font-semibold hover:bg-primary/90">
-                Get Early Access
+                {copy.earlyAccess.buttonText}
               </button>
             </div>
           </div>
