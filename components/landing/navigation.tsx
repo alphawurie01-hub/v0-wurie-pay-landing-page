@@ -68,7 +68,7 @@ export function Navigation() {
 
         {/* Mobile nav */}
         {isOpen && (
-          <div className="md:hidden py-4 border-t border-border/50">
+          <div className="md:hidden py-4 px-4 border-t border-white/10 bg-white/10 backdrop-blur-xl">
             <div className="flex flex-col gap-4">
               {navLinks.map((link) => (
                 <a 
