@@ -36,17 +36,8 @@ export function SocialProofSection() {
             </div>
             <div>
               <h2 className="text-2xl sm:text-3xl font-bold text-foreground">
-                Join the growing community building the future of African finance.
+                Get early access to WuriePay.
               </h2>
-            </div>
-          </div>
-          
-          <div className="flex items-center gap-4 bg-background rounded-2xl px-8 py-4 border border-border/50">
-            <div className="text-center">
-              <p className="text-4xl sm:text-5xl font-bold text-primary tabular-nums">
-                {count.toLocaleString()}+
-              </p>
-              <p className="text-sm text-muted-foreground mt-1">people already waiting for WuriePay</p>
             </div>
           </div>
         </div>

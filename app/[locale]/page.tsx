@@ -272,63 +272,6 @@ const HeroSection = ({ copy }: { copy: ReturnType<typeof getCopy> }) => {
   )
 }
 
-// Social Proof Section
-const SocialProofSection = ({ copy }: { copy: ReturnType<typeof getCopy> }) => {
-  const MIN_WAITLIST_COUNT = 3728
-  const [waitlistCount, setWaitlistCount] = useState<number>(MIN_WAITLIST_COUNT)
-
-  useEffect(() => {
-    let mounted = true
-
-    ;(async () => {
-      try {
-        const count = await getWaitlistCount()
-        if (mounted) setWaitlistCount(Math.max(MIN_WAITLIST_COUNT, count))
-      } catch {
-        // keep fallback
-      }
-    })()
-
-    const handler = (e: Event) => {
-      const ce = e as CustomEvent<{ count?: number; increment?: number }>
-      const next = ce.detail?.count
-      if (typeof next === "number") {
-        setWaitlistCount(Math.max(MIN_WAITLIST_COUNT, next))
-        return
-      }
-      const inc = ce.detail?.increment
-      if (typeof inc === "number" && Number.isFinite(inc) && inc > 0) {
-        setWaitlistCount((prev) => Math.max(MIN_WAITLIST_COUNT, prev + inc))
-      }
-    }
-
-    window.addEventListener("wuriepay:waitlist-count", handler)
-    return () => {
-      mounted = false
-      window.removeEventListener("wuriepay:waitlist-count", handler)
-    }
-  }, [])
-
-  return (
-    <section className="border-y bg-muted/30 py-12">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="text-center">
-          <h2 className="text-2xl font-bold sm:text-3xl">{copy.socialProof.heading}</h2>
-          <div className="mt-8 flex flex-col items-center justify-center gap-2">
-            <div className="flex items-center gap-2">
-              <Users className="h-8 w-8 text-[#00A86B]" />
-              <span className="text-4xl font-bold">
-                <AnimatedCounter value={waitlistCount} />
-              </span>
-            </div>
-            <p className="text-muted-foreground">{copy.socialProof.sub}</p>
-          </div>
-        </div>
-      </div>
-    </section>
-  )
-}
-
 const ProblemSection = ({ copy }: { copy: ReturnType<typeof getCopy> }) => {
   const problems = [
     { icon: DollarSign, title: copy.problem.items[0].title, desc: copy.problem.items[0].desc },
@@ -751,7 +694,20 @@ export default function LocalizedLandingPage() {
       <Header copy={copy} locale={locale} />
       <main>
         <HeroSection copy={copy} />
-        <SocialProofSection copy={copy} />
+        <section className="py-12 text-center border-y bg-muted/30">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <h2 className="text-2xl font-bold sm:text-3xl">
+              Send, save, and grow money across Africa
+              <br />
+              fast and simple.
+            </h2>
+            <div className="mt-8">
+              <button className="px-6 py-2 bg-primary text-primary-foreground rounded-lg font-semibold hover:bg-primary/90">
+                Get Early Access
+              </button>
+            </div>
+          </div>
+        </section>
         <ProblemSection copy={copy} />
         <SolutionSection copy={copy} />
         <BenefitsSection copy={copy} />

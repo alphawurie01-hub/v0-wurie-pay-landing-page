@@ -122,3 +122,19 @@
     @apply bg-background text-foreground;
   }
 }
+
+@layer utilities {
+  @keyframes gradient-sweep {
+    0% {
+      background-position: -200% center;
+    }
+    100% {
+      background-position: 200% center;
+    }
+  }
+
+  .gradient-sweep {
+    background-size: 200% auto;
+    animation: gradient-sweep 2s linear;
+  }
+}
