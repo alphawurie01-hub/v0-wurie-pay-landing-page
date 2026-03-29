@@ -53,16 +53,19 @@ export function Footer() {
 
           {/* Social */}
           <div>
-            <h4 className="font-semibold text-background mb-4">Follow Us</h4>
-            <div className="flex gap-3">
+            <h4 className="font-semibold text-background mb-4 text-lg">Follow Us</h4>
+            <p className="text-background/50 text-sm mb-4">Stay connected with WuriePay</p>
+            <div className="flex gap-4">
               {socialLinks.map((social, index) => (
                 <a 
                   key={index}
                   href={social.href}
-                  className="w-10 h-10 bg-background/10 rounded-full flex items-center justify-center hover:bg-primary transition-colors group"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-12 h-12 bg-background/10 rounded-full flex items-center justify-center hover:bg-primary hover:scale-110 transition-all duration-200 group"
                   aria-label={social.label}
                 >
-                  <social.icon className="w-5 h-5 text-background/60 group-hover:text-primary-foreground transition-colors" />
+                  <social.icon className="w-6 h-6 text-background group-hover:text-primary-foreground transition-colors" />
                 </a>
               ))}
             </div>
