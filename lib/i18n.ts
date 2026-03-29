@@ -116,7 +116,7 @@ const copy = {
           linkedin: "https://sl.linkedin.com/in/alhaji-wurie-jalloh-65721526b",
         },
         {
-          name: "Hassan Wurie Jalloh",
+          name: "Hassana Diallo",
           role: "Co-Founder",
           bio: "Data Scientist and AI Engineer passionate about building intelligent systems that solve real-world problems. As Co-Founder of WuriePay and WurieAI, he brings expertise in machine learning, data science, and artificial intelligence to develop scalable technologies that advance financial innovation and inclusion across Africa.",
           image: "/images/hassan.png",
@@ -258,9 +258,9 @@ const copy = {
           linkedin: "https://sl.linkedin.com/in/alhaji-wurie-jalloh-65721526b",
         },
         {
-          name: "Hassan Wurie Jalloh",
+          name: "Hassana Diallo",
           role: "Co-fondateur",
-          bio: "Data scientist et ingénieur IA passionné par la création de systèmes intelligents qui résolvent des problèmes réels. En tant que co-fondateur de WuriePay et WurieAI, il apporte son expertise en machine learning, data science et intelligence artificielle pour développer des technologies évolutives qui accélèrent l’innovation et l’inclusion financière en Afrique.",
+          bio: "Data scientist et ingénieur IA passionné par la création de systèmes intelligents qui résolvent des problèmes réels. En tant que co-fondateur de WuriePay et WurieAI, il apporte son expertise en machine learning, data science et intelligence artificielle pour développer des technologies évolutives qui accélèrent l'innovation et l'inclusion financière en Afrique.",
           image: "/images/hassan.png",
           linkedin: "https://www.linkedin.com/in/hassana-diallo-1489a8236",
         },

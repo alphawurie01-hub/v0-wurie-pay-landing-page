@@ -8,10 +8,10 @@ const founders = [
     initials: "AW"
   },
   {
-    name: "Hassan Wurie Jalloh",
+    name: "Hassana Diallo",
     role: "Co-Founder & COO",
     bio: "Responsible for operations, partnerships, and scaling the WuriePay platform.",
-    initials: "HW"
+    initials: "HD"
   }
 ]
 

@@ -1,10 +1,9 @@
 import { Twitter, Linkedin, Instagram, Facebook, Mail } from "lucide-react"
 
 const socialLinks = [
-  { icon: Twitter, href: "#", label: "Twitter" },
-  { icon: Linkedin, href: "#", label: "LinkedIn" },
-  { icon: Instagram, href: "#", label: "Instagram" },
-  { icon: Facebook, href: "#", label: "Facebook" },
+  { icon: Twitter, href: "https://x.com/wuriepay", label: "Twitter" },
+  { icon: Linkedin, href: "https://linkedin.com/company/wuriepay", label: "LinkedIn" },
+  { icon: Facebook, href: "https://facebook.com/wuriepay", label: "Facebook" },
 ]
 
 const footerLinks = [
