@@ -1,9 +1,8 @@
-import { Twitter, Linkedin, Facebook, Mail } from "lucide-react"
+import { Twitter, Linkedin, Mail } from "lucide-react"
 
 const socialLinks = [
-  { icon: Twitter, href: "https://x.com/wuriepay", label: "Twitter" },
+  { icon: Twitter, href: "https://x.com/wuriepay", label: "X (Twitter)" },
   { icon: Linkedin, href: "https://linkedin.com/company/wuriepay", label: "LinkedIn" },
-  { icon: Facebook, href: "https://facebook.com/wuriepay", label: "Facebook" },
 ]
 
 const footerLinks = [
@@ -31,10 +30,10 @@ export function Footer() {
               </span>
             </div>
             <p className="text-background/60 mb-6 max-w-md">
-              The future of finance in Africa. Send money, pay bills, and manage your finances with AI, all in one secure platform.
+              Building the future of finance in Africa.
             </p>
             <p className="text-sm text-background/40">
-              A product of <span className="text-primary font-medium">WurieGroup</span>
+              A <span className="text-primary font-medium">WurieGroup</span> company
             </p>
           </div>
 
