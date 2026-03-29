@@ -1,4 +1,4 @@
-import { Twitter, Linkedin, Instagram, Facebook, Mail } from "lucide-react"
+import { Twitter, Linkedin, Facebook, Mail } from "lucide-react"
 
 const socialLinks = [
   { icon: Twitter, href: "https://x.com/wuriepay", label: "Twitter" },
